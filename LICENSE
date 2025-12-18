@@ -20,9 +20,35 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ========================================================================
-ADDITIONAL PERMISSION UNDER SECTION 7 (COMMERCIAL DUAL-LICENSING):
-The copyright holder ("Oasis Swarm Architect") reserves the right to 
-issue commercial licenses (Enterprise Edition) that are exempt from 
-the copyleft provisions of this AGPLv3 license. Contributors must agree 
-to a CLA (Contributor License Agreement) to facilitate this model.
+       ADDITIONAL PERMISSIONS AND COVENANTS UNDER SECTION 7
+========================================================================
+
+1. COMMERCIAL DUAL-LICENSING
+   The copyright holder ("Oasis Swarm Architect") reserves the right to 
+   issue commercial licenses (Enterprise Edition) that are exempt from 
+   the copyleft provisions of this AGPLv3 license. Contributors must agree 
+   to a CLA (Contributor License Agreement) to facilitate this model.
+
+2. THE OASIS ETHICAL COVENANT & IMPACT GRANT (ODS/SDG)
+   In addition to the terms of the GNU AGPLv3, the "Oasis Swarm Architect" 
+   offers a special "Impact Grant" to foster positive social transformation.
+
+   A. ALIGNMENT WITH SUSTAINABLE DEVELOPMENT GOALS (SDGs/ODS)
+      Entities that can demonstrate strict alignment with the following United 
+      Nations SDGs are eligible for a free Enterprise License:
+      
+      - ODS 4:  Quality Education (Educación de Calidad)
+      - ODS 8:  Decent Work & Economic Growth (Trabajo Decente)
+      - ODS 9:  Industry, Innovation & Infrastructure (Industria e Innovación)
+      - ODS 12: Responsible Consumption (Producción Responsable)
+      - ODS 13: Climate Action (Acción por el Clima)
+      - ODS 16: Peace, Justice & Strong Institutions (Paz y Justicia)
+      - ODS 17: Partnerships for the Goals (Alianzas)
+
+   B. THE SOCIAL REINVESTMENT PLEDGE
+      To activate this Impact Grant, the entity implies a moral commitment:
+      "Resources and capital saved through the efficiency of this software 
+      shall be partially redirected towards social works, fostering positive 
+      human values, or furthering the aforementioned SDGs."
+
 ========================================================================
