@@ -1,67 +1,66 @@
-import { PHYSICS } from '../constants/UniversalConstants';
+import { Economy } from '../constants/modules/Economy';
 
+/**
+ * ⚙️ ECONOMIC ENGINE v3 (Alive)
+ * El corazón que bombea valor basándose en estímulos del entorno.
+ */
 export class EconomicEngine {
 
   /**
-   * CÁLCULO DE PRECIO INDUSTRIAL RELATIVISTA (v36.0)
-   * Integra: Ramsey, Escala Logarítmica y Tiempo Propio.
-   *
-   * @param watts Consumo del nodo (Potencia)
-   * @param wallClockHours Duración de la tarea (Tiempo Coordinado)
-   * @param activeNodes Número total de nodos en la red (Oferta)
-   * @param networkLoad Carga actual de la red (0.0 a 1.0)
-   * @param clientType 'GAMER' (Elástico) o 'ENTERPRISE' (Inelástico)
+   * CÁLCULO DE PRECIO BIO-REACTIVO
+   * @param nodeWatts - Consumo hardware (W)
+   * @param hours - Duración (h)
+   * @param localKwhCost - Input sensorial: Precio luz local ($/kWh)
+   * @param hwTier - Input físico: Masa del hardware (LOW/MED/HIGH)
+   * @param userTier - Input mercado: Elasticidad (CONSUMER/ENTERPRISE)
+   * @param networkLoad - Input sistémico: Presión de red (0.0 - 1.0)
    */
-  static calculateServicePrice(
-      watts: number,
-      wallClockHours: number,
-      activeNodes: number,
-      networkLoad: number,
-      clientType: 'GAMER' | 'ENTERPRISE'
-  ) { // Quitamos el tipo de retorno explícito para que TS lo infiera
+  static calculateTransactionPrice(
+    nodeWatts: number,
+    hours: number,
+    localKwhCost: number,
+    hwTier: 'LOW' | 'MED' | 'HIGH',
+    userTier: 'CONSUMER' | 'PRO' | 'ENTERPRISE',
+    networkLoad: number
+  ) {
+    // 1. SENSÓRICA (Lectura del Entorno)
+    // El sistema se adapta a la realidad local, no a una media global.
+    const realElectricityPrice = Economy.PHYSICAL_COSTS.getLocalKwhPrice(localKwhCost);
+    const hardwareWear = Economy.PHYSICAL_COSTS.getHardwareDepreciation(hwTier);
 
-    // 1. CORRECCIÓN RELATIVISTA (Tiempo Propio)
-    // Descontamos el lag de la red. El usuario paga por tiempo útil.
-    // Gamma aumenta con la carga.
-    const gamma = 1 / Math.sqrt(1 - Math.min(networkLoad, 0.99));
-    const properHours = wallClockHours / gamma;
+    // 2. TERMODINÁMICA (El Suelo)
+    const kwh = (nodeWatts / 1000) * hours;
+    const energyCost = kwh * realElectricityPrice;
+    const ironCost = hours * hardwareWear;
+    
+    // Coste Marginal (CM) + Margen de Supervivencia
+    const nodeFloor = (energyCost + ironCost) * Economy.PHYSICAL_COSTS.MIN_PROFIT_MARGIN;
 
-    // 2. COSTE MARGINAL BASE (Física)
-    const kwh = (watts * properHours) / 1000;
-    const energyCost = kwh * PHYSICS.MIN_PRICE_WATT;
-    const hardwareWear = properHours * PHYSICS.HARDWARE_AMORTIZATION;
+    // 3. ESTRATEGIA DE JUEGO (Ramsey + Surge)
+    let markup = Economy.RAMSEY_FEES[`TIER_${userTier}`];
+    let surgeActive = false;
 
-    let marginalCost = energyCost + hardwareWear;
+    // EL FRENO DE EMERGENCIA (Termostato)
+    if (networkLoad > 0.90) {
+        markup = Math.max(markup, Economy.RAMSEY_FEES.TIER_SURGE); // Salta al 50%
+        surgeActive = true;
+    }
 
-    // 3. FACTOR DE ESCALA (Ley de Rendimientos Crecientes)
-    // El precio baja logarítmicamente cuantos más nodos hay.
-    // Scale Factor ~ 1 / log10(Nodos). Con 1M nodos, el precio cae.
-    const scaleEfficiency = 1 / Math.log10(Math.max(10, activeNodes));
-    marginalCost = marginalCost * scaleEfficiency;
-
-    // 4. TERMODINÁMICA DE MERCADO (Ajuste de Escasez)
-    // Si la red está caliente (>90%), precio sube para frenar demanda.
-    // Usamos la constante K_OASIS para la expansión térmica del precio.
-    const temperature = networkLoad;
-    const scarcityPremium = marginalCost * (Math.exp(temperature / (PHYSICS.K_OASIS * 10000)) - 1); 
-    // Nota: Ajustamos el divisor K para que el precio no explote a infinito en esta simulación
-
-    // 5. COMISIÓN ELÁSTICA (Ramsey Pricing)
-    const feeRate = PHYSICS.DAO_FEE_ELASTIC[clientType];
-    const baseFee = marginalCost * feeRate;
-
-    // 6. AMORTIGUACIÓN TESLA (Precio Final)
-    const dampedPrice = (marginalCost + scarcityPremium + baseFee) + PHYSICS.TESLA_DAMPING;
+    // 4. PRECIO FINAL
+    const finalPrice = nodeFloor * (1 + markup);
+    const platformFee = nodeFloor * markup;
 
     return {
-        total: dampedPrice,
-        breakdown: {
-            properTime: properHours.toFixed(2) + "h",
-            energyBase: energyCost.toFixed(4),
-            scaleDiscount: ((1 - scaleEfficiency) * 100).toFixed(1) + "%", // Cuánto ahorras
-            congestionSurge: scarcityPremium.toFixed(4),
-            finalPrice: dampedPrice.toFixed(4)
-        }
+      metadata: {
+        locationPrice: realElectricityPrice,
+        isSurge: surgeActive,
+        watts: nodeWatts
+      },
+      financials: {
+        totalUserPays: finalPrice,
+        nodeNet: nodeFloor, // El nodo siempre sobrevive
+        oasisRevenue: platformFee // Tu ganancia elástica
+      }
     };
   }
 }
