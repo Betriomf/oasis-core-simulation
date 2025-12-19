@@ -62,3 +62,54 @@ Los principios termodinámicos de este sistema se materializan exclusivamente a 
 
 ---
 *Ratificado criptográficamente en el Bloque Génesis. Vinculado a DOI Científico.*
+# GOBERNANZA DEL PROTOCOLO OASIS (v1.0)
+
+> **PRINCIPIO RECTOR:** La gobernanza de Oasis es un mecanismo de señalización técnica, no política. Buscamos la verdad matemática, no la tiranía de la mayoría ni la dictadura del capital.
+
+## 1. EL SISTEMA DE VOTO: CUADRÁTICO (Quadratic Voting)
+Para evitar que grandes capitales ("Ballenas") capturen el protocolo, el coste del voto aumenta exponencialmente, no linealmente.
+
+### La Fórmula Matemática
+$$Coste = (Votos)^2$$
+
+* **1 Voto** cuesta **1 SPN**.
+* **2 Votos** cuestan **4 SPN**.
+* **10 Votos** cuestan **100 SPN**.
+
+### El Efecto Legal y Técnico
+* **Meritocracia:** Un experto apasionado puede influir fuertemente en un tema específico gastando sus tokens, pero no puede dominar todos los temas.
+* **Resistencia a la Plutocracia:** Un millonario con 10,000 tokens no puede silenciar a 100 desarrolladores con 100 tokens cada uno. El dinero pierde eficiencia al escalar.
+
+## 2. ÁMBITO DE LA GOBERNANZA (¿Qué se vota?)
+La DAO solo tiene poder sobre **Parámetros Técnicos**, nunca sobre la Propiedad Privada.
+
+* ✅ **SÍ se vota:**
+    * Ajuste de `RAMSEY_FEES` (Márgenes).
+    * Inclusión de nuevos algoritmos de cifrado.
+    * Actualizaciones del `BUILDER_REWARD`.
+* ❌ **NO se vota (Inmutable):**
+    * Confiscación de fondos de usuarios.
+    * Violación de la privacidad (Desencriptado).
+    * Emisión arbitraria de tokens (Inflación no programada).
+
+## 3. EL VETO CONSTITUCIONAL
+Cualquier propuesta que viole el **Teorema CAP** o la **Seguridad Termodinámica** (que obligue a los nodos a trabajar a pérdidas) es nula automáticamente, independientemente de los votos. La Física no se somete a votación.
+
+---
+*Este sistema alinea los incentivos económicos con la estabilidad técnica.*
+
+# GOBERNANZA DEL PROTOCOLO OASIS (v1.0)
+
+> **PRINCIPIO RECTOR:** La gobernanza de Oasis es un mecanismo de señalización técnica. Buscamos la verdad matemática, no la tiranía del capital.
+
+## 1. EL SISTEMA DE VOTO: CUADRÁTICO (Quadratic Voting)
+Para evitar la plutocracia, el coste del voto aumenta exponencialmente.
+* **Fórmula:** $$Coste = (Votos)^2$$
+* **Efecto:** El dinero pierde eficiencia al escalar. Un experto vale más que un millonario silencioso.
+
+## 2. ÁMBITO DE LA GOBERNANZA
+* ✅ **SÍ se vota:** Parámetros técnicos (Fees, Algoritmos).
+* ❌ **NO se vota:** Propiedad privada, Privacidad, Seguridad Termodinámica.
+
+## 3. EL VETO CONSTITUCIONAL
+Cualquier propuesta que viole el Teorema CAP o obligue a los nodos a trabajar a pérdidas es nula automáticamente.
