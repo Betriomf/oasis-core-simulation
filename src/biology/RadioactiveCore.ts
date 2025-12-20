@@ -1,21 +1,23 @@
-import { PHYSICS } from '../constants/UniversalConstants';
-import { GaussianDefense } from '../statistics/GaussianDefense'; // <--- ESTO ES NUEVO
+// NOTA: Importamos 'Physics' y lo renombramos a 'PHYSICS' para que coincida con tu lógica
+import { Physics as PHYSICS } from '../constants/modules/Physics';
+import { GaussianDefense } from '../statistics/GaussianDefense';
 
-export type NodeType = 'GAMER' | 'ENTERPRISE' | 'CACHE';
+/**
+ * TIPOS DE NODO (Taxonomía Expandida)
+ */
+export type NodeType = 'GAMER' | 'ENTERPRISE' | 'COMPUTE' | 'ARCHIVE' | 'CACHE';
 
 export class RadioactiveCore {
 
     /**
      * 1. ABSORCIÓN DE DOSIS (Ley de Potencias)
-     * (Esto ya lo tenías, se mantiene igual)
      */
     static calculateAbsorbedDose(severity: number): number {
         return Math.pow(severity * 10, PHYSICS.DOSE_EXPONENT);
     }
 
     /**
-     * 2. DECAIMIENTO RELATIVISTA (Marie Curie + Einstein)
-     * (Esto ya lo tenías, se mantiene igual)
+     * 2. DECAIMIENTO RELATIVISTA
      */
     static decayRadiation(
         currentSieverts: number,
@@ -23,9 +25,23 @@ export class RadioactiveCore {
         nodeType: NodeType,
         gammaFactor: number = 1.0
     ): number {
-        let lambda = PHYSICS.LAMBDA_GAMER;
-        if (nodeType === 'ENTERPRISE') lambda = PHYSICS.LAMBDA_ENTERPRISE;
-        if (nodeType === 'CACHE') lambda = PHYSICS.LAMBDA_CACHE;
+        
+        let lambda: number;
+
+        switch (nodeType) {
+            case 'ENTERPRISE':
+            case 'ARCHIVE': 
+            case 'COMPUTE': 
+                lambda = PHYSICS.LAMBDA_ENTERPRISE; 
+                break;
+            case 'CACHE':
+                lambda = PHYSICS.LAMBDA_CACHE; 
+                break;
+            case 'GAMER':
+            default:
+                lambda = PHYSICS.LAMBDA_GAMER; 
+                break;
+        }
 
         const properTime = wallClockSeconds / gammaFactor;
         const decayFactor = Math.exp(-lambda * properTime);
@@ -36,16 +52,14 @@ export class RadioactiveCore {
     }
 
     /**
-     * 3. LÍMITE FÍSICO (Hard Limit)
-     * (Esto ya lo tenías)
+     * 3. LÍMITE FÍSICO
      */
     static isLethal(sieverts: number): boolean {
         return sieverts >= PHYSICS.LETHAL_DOSE_SV;
     }
 
     /**
-     * 4. JUICIO GAUSSIANO (NUEVO - v37.0)
-     * Este es el "Cerebro Estadístico". Decide si aplicar el ban o perdonar.
+     * 4. JUICIO GAUSSIANO
      */
     static shouldBanNode(
         nodeRadiation: number,
@@ -53,35 +67,27 @@ export class RadioactiveCore {
         networkStdDev: number
     ): { banned: boolean, zScore: number, reason: string } {
 
-        // A. Calculamos el Z-Score (Qué tan raro es este nodo)
         const z = GaussianDefense.calculateZScore(
             nodeRadiation,
             networkAvgRadiation,
             networkStdDev
         );
 
-        // B. Lógica de "Perdón Contextual"
-        // Solo baneamos si el nodo supera el límite LETAL...
         if (nodeRadiation > PHYSICS.LETHAL_DOSE_SV) {
-            
-            // ... Y ADEMÁS es una anomalía estadística (Z > 3.5).
-            // Si Z es bajo, significa que todos están mal (ej. fallo global), así que perdonamos.
             if (GaussianDefense.isAnomaly(z)) {
-                return { 
-                    banned: true, 
-                    zScore: z, 
-                    reason: `ANOMALY_CONFIRMED (Z: ${z.toFixed(2)})` 
+                return {
+                    banned: true,
+                    zScore: z,
+                    reason: `ANOMALY_CONFIRMED (Z: ${z.toFixed(2)})`
                 };
             } else {
-                return { 
-                    banned: false, 
-                    zScore: z, 
-                    reason: "PARDONED_BY_CONTEXT" // El contexto te salva
-                }; 
+                return {
+                    banned: false,
+                    zScore: z,
+                    reason: "PARDONED_BY_CONTEXT (Global Radiation Spike)" 
+                };
             }
         }
-
-        // Si no supera el límite letal, está sano.
         return { banned: false, zScore: z, reason: "HEALTHY" };
     }
 }

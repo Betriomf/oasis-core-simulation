@@ -1,25 +1,31 @@
-import { PHYSICS } from '../constants/UniversalConstants';
-
+/**
+ * 📊 GAUSSIAN DEFENSE SYSTEM
+ * "El cerebro estadístico que diferencia entre un error y un ataque."
+ * Calcula desviaciones estándar y Z-Scores.
+ */
 export class GaussianDefense {
-
+    
     /**
-     * CÁLCULO DEL Z-SCORE (La Prueba de la Verdad)
-     * Mide cuántas desviaciones estándar se aleja un valor de la media.
-     * Z = 0 -> Comportamiento perfecto (promedio).
-     * Z > 3 -> Comportamiento sospechoso.
+     * Calcula cuántas desviaciones estándar se aleja un valor de la media.
+     * Fórmula: Z = (X - μ) / σ
+     * * @param value - El valor del nodo (ej. Radiación actual)
+     * @param mean - La media de la red
+     * @param stdDev - La desviación estándar de la red
      */
     static calculateZScore(value: number, mean: number, stdDev: number): number {
-        if (stdDev === 0) return 0; // Si todos son iguales, nadie es sospechoso
+        // Evitamos división por cero si la red es perfecta (stdDev = 0)
+        if (stdDev === 0) return 0;
+        
         return (value - mean) / stdDev;
     }
 
     /**
-     * FILTRO DE RUIDO (Suavizado Gaussiano)
-     * Decide si un nodo debe ser baneado basándose en el contexto global.
+     * Determina si es una anomalía estadística.
+     * En una distribución normal (Campana de Gauss):
+     * - Z > 3.0 ocurre solo el 0.1% de las veces.
+     * - Z > 3.5 es extremadamente raro (ANOMALÍA CONFIRMADA).
      */
     static isAnomaly(zScore: number): boolean {
-        // Si Z > 3.5, la probabilidad de que sea "mala suerte" es < 0.02%.
-        // Es casi seguro malicia o fallo catastrófico.
-        return Math.abs(zScore) > PHYSICS.ANOMALY_THRESHOLD_Z;
+        return Math.abs(zScore) > 3.5;
     }
 }

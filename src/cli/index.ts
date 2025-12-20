@@ -5,12 +5,15 @@ import { Physics } from '../constants/modules/Physics';
 import { OasisMeshNetwork } from '../geometry/OasisMeshNetwork';
 import { NewtonianMechanics } from '../physics/NewtonianMechanics';
 import { TeslaResonance } from '../physics/TeslaResonance';
-import { EinsteinPhysics } from '../physics/relativity/EinsteinPhysics'; // <--- NUEVO: EINSTEIN
+import { EinsteinPhysics } from '../physics/relativity/EinsteinPhysics';
+import { RadioactiveCore } from '../biology/RadioactiveCore';
+import { TuringReplicator } from '../biology/TuringReplicator';
+import { LandauerLimit } from '../physics/LandauerLimit';
 
 /**
- * 🖥️ OASIS CLI (Command Line Interface) v1.3
+ * 🖥️ OASIS CLI (Command Line Interface) v1.6
  * El cuerpo que permite al usuario interactuar con el alma del proyecto.
- * Integra: Economía Ramsey, Física Termodinámica, Red Phi-CAP, Newton, Tesla y Einstein.
+ * Integra: Física, Biología, Economía y Geometría Sagrada.
  */
 
 async function main() {
@@ -18,13 +21,12 @@ async function main() {
   const command = args[0];
 
   console.log(`
-  ░▒▓ OASIS CORE v1.0 ▓▒░
-  "Thermodynamic Computing Protocol"
-  ----------------------------------
-  Velocidad de Red: ${Physics.C_OASIS} km/s
-  Sincronización:   Irracional (Phi-CAP)
-  Física:           Newton, Tesla & Einstein
-  ----------------------------------
+  ░▒▓ OASIS CORE v1.6 - "THE LIVING SYSTEM" ▓▒░
+  ---------------------------------------------
+  Física:   Newton, Tesla, Einstein, Landauer
+  Biología: Curie, Turing
+  Economía: Ramsey
+  ---------------------------------------------
   `);
 
   switch (command) {
@@ -73,59 +75,73 @@ async function main() {
       const nodeB = { lat: 20, bw: 100 }; 
       const Z_B = TeslaResonance.calculateImpedance(nodeB.lat, file.size, nodeB.bw);
       console.log(`   > Nodo B (Sintonizado): Z = ${Z_B.toFixed(2)} Ω -> ${TeslaResonance.getResonanceQuality(Z_B, nodeB.lat)}`);
-      const baseSpeed = 100; 
-      const teslaSpeed = TeslaResonance.calculatePolyphaseThroughput(baseSpeed);
-      console.log(`\n🚀 EFICIENCIA TRIFÁSICA (√3):`);
-      console.log(`   > Estándar (TCP lineal): ${baseSpeed} Mbps`);
-      console.log(`   > Oasis (Trifásico):     ${teslaSpeed.toFixed(2)} Mbps (+73% Ganancia Geométrica)`);
       break;
 
-    // --- NUEVA SECCIÓN: EINSTEIN ---
     case 'einstein':
       console.log("🌌 SIMULACIÓN DE RELATIVIDAD (Espacio-Tiempo)...");
-
-      // ESCENARIO 1: CAUSALIDAD
       console.log("\n🛑 1. TEST DE CAUSALIDAD (Minkowski):");
-      const distNY_Tokyo = 10800; // km
-      const claimedTime = 20;     // ms (Imposible, la luz tarda ~36ms)
+      const distNY_Tokyo = 10800; 
+      const claimedTime = 20;     
       console.log(`   > Transacción: NY -> Tokyo (${distNY_Tokyo} km) en ${claimedTime} ms.`);
       const isFraud = EinsteinPhysics.checkCausalityViolation(distNY_Tokyo, claimedTime);
-      
-      if (isFraud) {
-          console.log("   > 🚨 ALERTA: VIOLACIÓN DE CAUSALIDAD. Transacción rechazada.");
-          console.log("     [Razón] La luz tardaría ~36ms. Es físicamente imposible (Métrica ds^2).");
-      } else {
-          console.log("   > ✅ VÁLIDO: Intervalo causal correcto.");
-      }
-
-      // ESCENARIO 2: DILATACIÓN TEMPORAL
-      console.log("\n⏳ 2. DILATACIÓN TEMPORAL (Lorentz):");
-      const stressLoad = 90; // Nodo saturado (Alta Gravedad)
-      const dilation = EinsteinPhysics.calculateTimeDilation(stressLoad);
-      console.log(`   > Carga del Nodo: ${stressLoad}%`);
-      console.log(`   > Factor de Dilatación (Gamma): ${dilation.toFixed(4)}x`);
-      console.log(`   > Conclusión: 1 seg del nodo = ${dilation.toFixed(2)} seg reales.`);
-      console.log("     [Acción] Timeout extendido automáticamente.");
-
-      // ESCENARIO 3: E = mc^2
-      console.log("\n⚡ 3. PRECIO RELATIVISTA (E=mc^2):");
-      const mass = 100; // MB
-      const urgency = 5; 
-      const priceE = EinsteinPhysics.calculateRelativisticPrice(mass, urgency);
-      console.log(`   > Masa: ${mass}MB | Urgencia: ${urgency}^2`);
-      console.log(`   > Coste Energético: ${priceE} SPN`);
+      if (isFraud) console.log("   > 🚨 ALERTA: VIOLACIÓN DE CAUSALIDAD.");
+      else console.log("   > ✅ VÁLIDO.");
       break;
-    // -------------------------------
+
+    // --- BLOQUE BIOLÓGICO COMPLETO ---
+    case 'bio':
+      console.log("🧬 SISTEMAS BIOLÓGICOS AVANZADOS (v33.5)...");
+
+      // 1. CURIE: DECAIMIENTO POR TIPO (Justicia Laboral)
+      console.log("\n☢️  1. DECAIMIENTO DE ISÓTOPOS (144h Inactivo):");
+      const repStart = 100;
+      const hours = 144;
+      
+      const repGamer = RadioactiveCore.decayRadiation(repStart, hours, 'GAMER');
+      console.log(`   > Gamer (PC Casa):     ${repStart} -> ${repGamer.toFixed(2)} (Cae rápido)`);
+      
+      const repAI = RadioactiveCore.decayRadiation(repStart, hours, 'COMPUTE');
+      console.log(`   > Compute (Granja IA): ${repStart} -> ${repAI.toFixed(2)} (Estable como Enterprise)`);
+
+      // 2. CURIE: DEFENSA GAUSSIANA
+      console.log("\n🛡️  2. JUICIO GAUSSIANO (¿Baneamos?):");
+      const lethalRad = 15; // Supera el límite de 10
+      
+      // Escenario A: Solo este nodo falla (Es una anomalía)
+      const judgeA = RadioactiveCore.shouldBanNode(lethalRad, 0.5, 0.1);
+      console.log(`   > Caso A (Solo tú fallas): ${judgeA.banned ? 'BANNED 🔨' : 'SAFE'} -> ${judgeA.reason}`);
+
+      // Escenario B: Todos fallan (Fallo global de red)
+      const judgeB = RadioactiveCore.shouldBanNode(lethalRad, 14, 2); 
+      console.log(`   > Caso B (Todos fallan):   ${judgeB.banned ? 'BANNED 🔨' : 'SAFE'} -> ${judgeB.reason}`);
+      
+      // 3. TURING: REACCIÓN-DIFUSIÓN
+      console.log("\n🐆 3. MORFOGÉNESIS (Turing Patterns):");
+      
+      // Escenario Viral (u alto, v bajo)
+      const actionViral = TuringReplicator.decideState(0.8, 0.1, 0.7, 0.1);
+      console.log(`   > Viral (u=0.8, v=0.1):   ${actionViral} 🦠 (Crecimiento Exponencial)`);
+
+      // Escenario Basura (u bajo, v alto)
+      const actionDead = TuringReplicator.decideState(0.1, 0.9, 0.1, 0.8);
+      console.log(`   > Basura (u=0.1, v=0.9):  ${actionDead} 💀 (Apoptosis / Limpieza)`);
+
+      // 4. LANDAUER: TERMODINÁMICA
+      console.log("\n🌡️  4. LÍMITE DE LANDAUER & ECONOMÍA:");
+      const dataBits = 1e12; // 1 Terabit
+      const heatOasis = LandauerLimit.calculateHeatGenerated(dataBits, 'OASIS');
+      const heatClassic = LandauerLimit.calculateHeatGenerated(dataBits, 'CLASSICAL');
+      
+      console.log(`   > Calor AWS:   ${heatClassic.toExponential(2)} J`);
+      console.log(`   > Calor Oasis: ${heatOasis.toExponential(2)} J`);
+      console.log(`   > 🌿 AHORRO:   ${LandauerLimit.getEfficiencyGain()}`);
+      console.log(`   > 💰 PRECIO:   ${LandauerLimit.calculatePriceSPN(dataBits).toFixed(4)} SPN`);
+      break;
 
     case 'help':
     default:
       console.log("Comandos disponibles:");
-      console.log("  start   -> Iniciar nodo (Phi-CAP).");
-      console.log("  newton  -> Simular física de decisión (F=ma).");
-      console.log("  tesla   -> Simular física de flujo (Resonancia).");
-      console.log("  einstein-> Simular física de ley (Relatividad)."); // <--- AÑADIDO
-      console.log("  audit   -> Verificar integridad.");
-      console.log("  economy -> Ver precios.");
+      console.log("  start, audit, economy, newton, tesla, einstein, bio");
       break;
   }
 }

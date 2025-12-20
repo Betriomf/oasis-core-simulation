@@ -1,48 +1,34 @@
-/**
- * LEYES FÍSICAS INMUTABLES
- * Estas constantes definen la realidad del sistema. No se tocan.
- */
-export const PHYSICAL_LAWS = {
-    // 1. FUNDAMENTALES
-    PHI: 1.618033988749,
-    PHI_INV: 0.61803398875,
-    PLANCK_OASIS: 0.001,
-
-    // 2. GEOMETRÍA SAGRADA
-    GOLDEN_ANGLE: Math.PI * (3 - Math.sqrt(5)),
-    IRRATIONAL_SYNC_FACTOR: Math.SQRT2,
-    SQRT_3: 1.73205080757,
-
-    // 3. VELOCIDAD DE LA LUZ (Calibrada a Fibra Óptica)
-    // 200 km/ms
-    C_LIGHT_FIBER: 200.0, 
-
-    // 4. TERMODINÁMICA
-    STEFAN_BOLTZMANN: 5.67e-8,
-    MAX_TEMP_KELVIN: 350,
-    
-    // 5. ABSOLUTO
-    LANDAUER_CLASSIC_FACTOR: Math.log(2),
-    LANDAUER_OASIS_FACTOR: Math.log(1.618033988749),
-    ABSOLUTE_ZERO_ENTROPY: 0.0,
-    PERFECT_CAP_SCORE: 1.0
-};
-
-/**
+/*
+*
  * 🌌 OASIS PHYSICS CONSTANTS
- * Constantes fundamentales del universo digital.
- * Basado en: Relatividad, Termodinámica y Teoría de Cuerdas.
+ * "Las leyes inmutables que gobiernan la simulación."
  */
 export const Physics = {
-  // Velocidad de la luz en fibra (aprox 200,000 km/s) con refracción
-  C_OASIS: 200_000, 
+  // VELOCIDAD DE LA LUZ DIGITAL (km/s)
+  C_OASIS: 200_000,
 
-  // Límite de Planck (Unidad mínima de tiempo/espacio en la red)
+  // TIEMPO DE PLANCK (Mínima unidad temporal indivisible)
   PLANCK_TIME: 0.0001,
 
-  // Entropía Máxima permitida antes del colapso del nodo
-  MAX_ENTROPY: 0.99,
+  // ENTROPÍA MÁXIMA (Muerte térmica del nodo)
+  MAX_ENTROPY: 100,
 
-  // Constante de Gravedad de Datos (atracción hacia el centro)
-  G_DATA: 9.81
+  // CONSTANTE GRAVITACIONAL DE DATOS (Newton)
+  G_DATA: 6.674e-11,
+
+  // --- FÍSICA NUCLEAR (CURIE & BIOLOGÍA) ---
+  
+  // Exponente de castigo (Daño no lineal para ataques)
+  DOSE_EXPONENT: 4.8,
+
+  // Constantes de Decaimiento (Lambda = ln(2) / VidaMedia en horas)
+  LAMBDA_GAMER: Math.log(2) / 72,       // 72 Horas (Vida media PC Gamer)
+  LAMBDA_ENTERPRISE: Math.log(2) / 720, // 30 Días (Vida media Servidor)
+  LAMBDA_CACHE: Math.log(2) / 1,        // 1 Hora (Vida media Cache)
+
+  // Límite de Planck (Mínima reputación posible antes de ser considerada 0)
+  H_OASIS: 0.001,
+
+  // Dosis Letal (Sieverts acumulados para Baneo inmediato)
+  LETHAL_DOSE_SV: 10.0
 };
