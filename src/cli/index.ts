@@ -5,11 +5,12 @@ import { Physics } from '../constants/modules/Physics';
 import { OasisMeshNetwork } from '../geometry/OasisMeshNetwork';
 import { NewtonianMechanics } from '../physics/NewtonianMechanics';
 import { TeslaResonance } from '../physics/TeslaResonance';
+import { EinsteinPhysics } from '../physics/relativity/EinsteinPhysics'; // <--- NUEVO: EINSTEIN
 
 /**
- * 🖥️ OASIS CLI (Command Line Interface) v1.2
+ * 🖥️ OASIS CLI (Command Line Interface) v1.3
  * El cuerpo que permite al usuario interactuar con el alma del proyecto.
- * Integra: Economía Ramsey, Física Termodinámica, Red Phi-CAP, Mecánica Newtoniana y Resonancia Tesla.
+ * Integra: Economía Ramsey, Física Termodinámica, Red Phi-CAP, Newton, Tesla y Einstein.
  */
 
 async function main() {
@@ -22,7 +23,7 @@ async function main() {
   ----------------------------------
   Velocidad de Red: ${Physics.C_OASIS} km/s
   Sincronización:   Irracional (Phi-CAP)
-  Física:           Newton (F=ma) & Tesla (Resonancia)
+  Física:           Newton, Tesla & Einstein
   ----------------------------------
   `);
 
@@ -64,29 +65,57 @@ async function main() {
 
     case 'tesla':
       console.log("⚡ SIMULACIÓN DE RESONANCIA DE TESLA (Flujo)...");
-      
-      // ESCENARIO: Transmitir un archivo de 100MB
-      const file = { size: 100 }; // 100 MB (XL - Inercia Inductiva)
-      
+      const file = { size: 100 }; 
       console.log(`\n📡 INTENTANDO TRANSMISIÓN (Archivo: ${file.size}MB)...`);
-
-      // CASO A: Nodo Mal Sintonizado
       const nodeA = { lat: 50, bw: 500 }; 
       const Z_A = TeslaResonance.calculateImpedance(nodeA.lat, file.size, nodeA.bw);
       console.log(`   > Nodo A (Desfasado): Z = ${Z_A.toFixed(2)} Ω -> ${TeslaResonance.getResonanceQuality(Z_A, nodeA.lat)}`);
-
-      // CASO B: Nodo Resonante (Sintonizado)
       const nodeB = { lat: 20, bw: 100 }; 
       const Z_B = TeslaResonance.calculateImpedance(nodeB.lat, file.size, nodeB.bw);
       console.log(`   > Nodo B (Sintonizado): Z = ${Z_B.toFixed(2)} Ω -> ${TeslaResonance.getResonanceQuality(Z_B, nodeB.lat)}`);
-
-      // BENEFICIO TRIFÁSICO (Raíz de 3)
-      const baseSpeed = 100; // Mbps
+      const baseSpeed = 100; 
       const teslaSpeed = TeslaResonance.calculatePolyphaseThroughput(baseSpeed);
       console.log(`\n🚀 EFICIENCIA TRIFÁSICA (√3):`);
       console.log(`   > Estándar (TCP lineal): ${baseSpeed} Mbps`);
       console.log(`   > Oasis (Trifásico):     ${teslaSpeed.toFixed(2)} Mbps (+73% Ganancia Geométrica)`);
       break;
+
+    // --- NUEVA SECCIÓN: EINSTEIN ---
+    case 'einstein':
+      console.log("🌌 SIMULACIÓN DE RELATIVIDAD (Espacio-Tiempo)...");
+
+      // ESCENARIO 1: CAUSALIDAD
+      console.log("\n🛑 1. TEST DE CAUSALIDAD (Minkowski):");
+      const distNY_Tokyo = 10800; // km
+      const claimedTime = 20;     // ms (Imposible, la luz tarda ~36ms)
+      console.log(`   > Transacción: NY -> Tokyo (${distNY_Tokyo} km) en ${claimedTime} ms.`);
+      const isFraud = EinsteinPhysics.checkCausalityViolation(distNY_Tokyo, claimedTime);
+      
+      if (isFraud) {
+          console.log("   > 🚨 ALERTA: VIOLACIÓN DE CAUSALIDAD. Transacción rechazada.");
+          console.log("     [Razón] La luz tardaría ~36ms. Es físicamente imposible (Métrica ds^2).");
+      } else {
+          console.log("   > ✅ VÁLIDO: Intervalo causal correcto.");
+      }
+
+      // ESCENARIO 2: DILATACIÓN TEMPORAL
+      console.log("\n⏳ 2. DILATACIÓN TEMPORAL (Lorentz):");
+      const stressLoad = 90; // Nodo saturado (Alta Gravedad)
+      const dilation = EinsteinPhysics.calculateTimeDilation(stressLoad);
+      console.log(`   > Carga del Nodo: ${stressLoad}%`);
+      console.log(`   > Factor de Dilatación (Gamma): ${dilation.toFixed(4)}x`);
+      console.log(`   > Conclusión: 1 seg del nodo = ${dilation.toFixed(2)} seg reales.`);
+      console.log("     [Acción] Timeout extendido automáticamente.");
+
+      // ESCENARIO 3: E = mc^2
+      console.log("\n⚡ 3. PRECIO RELATIVISTA (E=mc^2):");
+      const mass = 100; // MB
+      const urgency = 5; 
+      const priceE = EinsteinPhysics.calculateRelativisticPrice(mass, urgency);
+      console.log(`   > Masa: ${mass}MB | Urgencia: ${urgency}^2`);
+      console.log(`   > Coste Energético: ${priceE} SPN`);
+      break;
+    // -------------------------------
 
     case 'help':
     default:
@@ -94,6 +123,7 @@ async function main() {
       console.log("  start   -> Iniciar nodo (Phi-CAP).");
       console.log("  newton  -> Simular física de decisión (F=ma).");
       console.log("  tesla   -> Simular física de flujo (Resonancia).");
+      console.log("  einstein-> Simular física de ley (Relatividad)."); // <--- AÑADIDO
       console.log("  audit   -> Verificar integridad.");
       console.log("  economy -> Ver precios.");
       break;
