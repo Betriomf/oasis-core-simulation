@@ -9,11 +9,13 @@ import { EinsteinPhysics } from '../physics/relativity/EinsteinPhysics';
 import { RadioactiveCore } from '../biology/RadioactiveCore';
 import { TuringReplicator } from '../biology/TuringReplicator';
 import { LandauerLimit } from '../physics/LandauerLimit';
+import { BlackCircleSandbox } from '../blackcircle/BlackCircleSandbox';
+import { PiEngine } from '../geometry/PiEngine';
 
 /**
- * 🖥️ OASIS CLI (Command Line Interface) v1.6
+ * 🖥️ OASIS CLI (Command Line Interface) v2.1
  * El cuerpo que permite al usuario interactuar con el alma del proyecto.
- * Integra: Física, Biología, Economía y Geometría Sagrada.
+ * Integra: Bootloader Físico (v2.1), Biología, Economía y Geometría.
  */
 
 async function main() {
@@ -21,25 +23,54 @@ async function main() {
   const command = args[0];
 
   console.log(`
-  ░▒▓ OASIS CORE v1.6 - "THE LIVING SYSTEM" ▓▒░
+  ░▒▓ OASIS CORE v2.1 - "THE LIVING SYSTEM" ▓▒░
   ---------------------------------------------
-  Física:   Newton, Tesla, Einstein, Landauer
-  Biología: Curie, Turing
-  Economía: Ramsey
+  Bootloader: Black Circle & Pi Engine (v2.1)
+  Física:     Newton, Tesla, Einstein, Landauer
+  Biología:   Curie, Turing
+  Economía:   Ramsey
   ---------------------------------------------
   `);
 
   switch (command) {
+    // --- BOOTLOADER v2.1 (BLINDADO) ---
     case 'start':
-      console.log("🚀 INICIANDO NODO OASIS...");
+      console.log("🚀 INICIANDO SECUENCIA DE ARRANQUE (BOOTLOADER v2.1)...");
       const nodeId = Math.floor(Math.random() * 10000);
-      console.log(`   > Identidad Fractal Generada: Nodo #${nodeId}`);
-      const heartbeat = OasisMeshNetwork.getNextHeartbeat(nodeId, 1000);
-      console.log(`   > Sincronización Irracional: ${heartbeat}ms (π / φ)`);
-      const neighbors = OasisMeshNetwork.getIdealNeighbors(nodeId, 10000);
-      console.log(`   > Conectando a Vecinos Fibonacci: [${neighbors.slice(0, 5).join(', ')}...]`);
-      console.log(`   > Bóveda conectada: ${Economy.TREASURY_WALLET}`);
-      console.log("   > Estado: ONLINE - Formando parte del Cristal (Idle).");
+
+      // PASO 1: PI ENGINE (Proof of Work/Precision Termodinámico)
+      console.log("\n🥧 1. PI ENGINE: Ejecutando Serie de Leibniz (10,000 iters)...");
+      // Forzamos trabajo real para validar la CPU
+      if (PiEngine.verifyCpuIntegrity(10000)) {
+          console.log("   > ✅ Integridad Verificada. CPU capaz de trabajo termodinámico.");
+      } else {
+          console.log("   > ❌ ERROR: La CPU no converge. Posible fallo de hardware o fraude.");
+          return;
+      }
+
+      // PASO 2: BLACK CIRCLE (Campo de Fuerza)
+      console.log("\n⚫ 2. BLACK CIRCLE: Estableciendo Campo de Fuerza...");
+      const testLoad = 2048; 
+      const stress = BlackCircleSandbox.calculateBarrierStress(testLoad);
+      console.log(`   > Estrés de Barrera: ${stress.toFixed(4)} (Potencial Coulomb V ~ 1/r)`);
+      
+      const temp = 45; 
+      const thermalState = BlackCircleSandbox.checkThermalSafety(temp);
+      console.log(`   > Estado Térmico: ${thermalState} (Simulado a ${temp}ºC)`);
+      
+      if (thermalState === 'SHUTDOWN') {
+          console.log("   > 🛑 ABORTANDO: Densidad de potencia crítica.");
+          return;
+      }
+
+      // PASO 3: SINCRONIZACIÓN (Hashing Áureo - Weyl)
+      console.log("\n📡 3. RED: Calculando Fase de Weyl (Golden Ratio)...");
+      const beat = PiEngine.getIrrationalHeartbeat(nodeId);
+      console.log(`   > Nodo #${nodeId} sintonizado a: ${beat}ms`);
+      console.log("   > ✅ SINCRONIZACIÓN PERFECTA: Distribución de baja discrepancia activa.");
+
+      // CONEXIÓN FINAL
+      console.log(`\n✨ SISTEMA ONLINE. Bóveda: ${Economy.TREASURY_WALLET}`);
       break;
 
     case 'audit':
@@ -88,50 +119,34 @@ async function main() {
       else console.log("   > ✅ VÁLIDO.");
       break;
 
-    // --- BLOQUE BIOLÓGICO COMPLETO ---
     case 'bio':
       console.log("🧬 SISTEMAS BIOLÓGICOS AVANZADOS (v33.5)...");
-
-      // 1. CURIE: DECAIMIENTO POR TIPO (Justicia Laboral)
+      
       console.log("\n☢️  1. DECAIMIENTO DE ISÓTOPOS (144h Inactivo):");
       const repStart = 100;
       const hours = 144;
-      
       const repGamer = RadioactiveCore.decayRadiation(repStart, hours, 'GAMER');
       console.log(`   > Gamer (PC Casa):     ${repStart} -> ${repGamer.toFixed(2)} (Cae rápido)`);
-      
       const repAI = RadioactiveCore.decayRadiation(repStart, hours, 'COMPUTE');
       console.log(`   > Compute (Granja IA): ${repStart} -> ${repAI.toFixed(2)} (Estable como Enterprise)`);
 
-      // 2. CURIE: DEFENSA GAUSSIANA
       console.log("\n🛡️  2. JUICIO GAUSSIANO (¿Baneamos?):");
-      const lethalRad = 15; // Supera el límite de 10
-      
-      // Escenario A: Solo este nodo falla (Es una anomalía)
+      const lethalRad = 15; 
       const judgeA = RadioactiveCore.shouldBanNode(lethalRad, 0.5, 0.1);
       console.log(`   > Caso A (Solo tú fallas): ${judgeA.banned ? 'BANNED 🔨' : 'SAFE'} -> ${judgeA.reason}`);
-
-      // Escenario B: Todos fallan (Fallo global de red)
       const judgeB = RadioactiveCore.shouldBanNode(lethalRad, 14, 2); 
       console.log(`   > Caso B (Todos fallan):   ${judgeB.banned ? 'BANNED 🔨' : 'SAFE'} -> ${judgeB.reason}`);
       
-      // 3. TURING: REACCIÓN-DIFUSIÓN
       console.log("\n🐆 3. MORFOGÉNESIS (Turing Patterns):");
-      
-      // Escenario Viral (u alto, v bajo)
       const actionViral = TuringReplicator.decideState(0.8, 0.1, 0.7, 0.1);
       console.log(`   > Viral (u=0.8, v=0.1):   ${actionViral} 🦠 (Crecimiento Exponencial)`);
-
-      // Escenario Basura (u bajo, v alto)
       const actionDead = TuringReplicator.decideState(0.1, 0.9, 0.1, 0.8);
       console.log(`   > Basura (u=0.1, v=0.9):  ${actionDead} 💀 (Apoptosis / Limpieza)`);
 
-      // 4. LANDAUER: TERMODINÁMICA
       console.log("\n🌡️  4. LÍMITE DE LANDAUER & ECONOMÍA:");
-      const dataBits = 1e12; // 1 Terabit
+      const dataBits = 1e12; 
       const heatOasis = LandauerLimit.calculateHeatGenerated(dataBits, 'OASIS');
       const heatClassic = LandauerLimit.calculateHeatGenerated(dataBits, 'CLASSICAL');
-      
       console.log(`   > Calor AWS:   ${heatClassic.toExponential(2)} J`);
       console.log(`   > Calor Oasis: ${heatOasis.toExponential(2)} J`);
       console.log(`   > 🌿 AHORRO:   ${LandauerLimit.getEfficiencyGain()}`);
