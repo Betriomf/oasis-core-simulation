@@ -11,11 +11,12 @@ import { TuringReplicator } from '../biology/TuringReplicator';
 import { LandauerLimit } from '../physics/LandauerLimit';
 import { BlackCircleSandbox } from '../blackcircle/BlackCircleSandbox';
 import { PiEngine } from '../geometry/PiEngine';
+import { NodeTaxonomy } from '../biology/NodeTaxonomy';
 
 /**
- * 🖥️ OASIS CLI (Command Line Interface) v2.1
+ * 🖥️ OASIS CLI (Command Line Interface) v2.2
  * El cuerpo que permite al usuario interactuar con el alma del proyecto.
- * Integra: Bootloader Físico (v2.1), Biología, Economía y Geometría.
+ * Integra: Bootloader Físico, Taxonomía, Biología, Economía y Geometría.
  */
 
 async function main() {
@@ -23,54 +24,61 @@ async function main() {
   const command = args[0];
 
   console.log(`
-  ░▒▓ OASIS CORE v2.1 - "THE LIVING SYSTEM" ▓▒░
+  ░▒▓ OASIS CORE v2.2 - "THE LIVING SYSTEM" ▓▒░
   ---------------------------------------------
-  Bootloader: Black Circle & Pi Engine (v2.1)
+  Bootloader: Black Circle & Pi Engine & Taxonomy
   Física:     Newton, Tesla, Einstein, Landauer
-  Biología:   Curie, Turing
+  Biología:   Curie, Turing, Taxonomy
   Economía:   Ramsey
   ---------------------------------------------
   `);
 
   switch (command) {
-    // --- BOOTLOADER v2.1 (BLINDADO) ---
+    // --- BOOTLOADER v2.2 (IDENTIDAD COMPLETA) ---
     case 'start':
-      console.log("🚀 INICIANDO SECUENCIA DE ARRANQUE (BOOTLOADER v2.1)...");
+      console.log("🚀 INICIANDO SECUENCIA DE ARRANQUE (BOOTLOADER v2.2)...");
       const nodeId = Math.floor(Math.random() * 10000);
 
-      // PASO 1: PI ENGINE (Proof of Work/Precision Termodinámico)
+      // PASO 1: PI ENGINE
       console.log("\n🥧 1. PI ENGINE: Ejecutando Serie de Leibniz (10,000 iters)...");
-      // Forzamos trabajo real para validar la CPU
       if (PiEngine.verifyCpuIntegrity(10000)) {
           console.log("   > ✅ Integridad Verificada. CPU capaz de trabajo termodinámico.");
       } else {
-          console.log("   > ❌ ERROR: La CPU no converge. Posible fallo de hardware o fraude.");
+          console.log("   > ❌ ERROR: La CPU no converge.");
           return;
       }
 
-      // PASO 2: BLACK CIRCLE (Campo de Fuerza)
+      // PASO 2: BLACK CIRCLE
       console.log("\n⚫ 2. BLACK CIRCLE: Estableciendo Campo de Fuerza...");
       const testLoad = 2048; 
       const stress = BlackCircleSandbox.calculateBarrierStress(testLoad);
-      console.log(`   > Estrés de Barrera: ${stress.toFixed(4)} (Potencial Coulomb V ~ 1/r)`);
+      console.log(`   > Estrés de Barrera: ${stress.toFixed(4)} (V ~ 1/r)`);
       
       const temp = 45; 
       const thermalState = BlackCircleSandbox.checkThermalSafety(temp);
-      console.log(`   > Estado Térmico: ${thermalState} (Simulado a ${temp}ºC)`);
-      
-      if (thermalState === 'SHUTDOWN') {
-          console.log("   > 🛑 ABORTANDO: Densidad de potencia crítica.");
-          return;
-      }
+      console.log(`   > Estado Térmico: ${thermalState}`);
+      if (thermalState === 'SHUTDOWN') return;
 
-      // PASO 3: SINCRONIZACIÓN (Hashing Áureo - Weyl)
-      console.log("\n📡 3. RED: Calculando Fase de Weyl (Golden Ratio)...");
+      // PASO 3: SINCRONIZACIÓN
+      console.log("\n📡 3. RED: Calculando Fase de Weyl...");
       const beat = PiEngine.getIrrationalHeartbeat(nodeId);
       console.log(`   > Nodo #${nodeId} sintonizado a: ${beat}ms`);
-      console.log("   > ✅ SINCRONIZACIÓN PERFECTA: Distribución de baja discrepancia activa.");
+
+      // PASO 4: TAXONOMÍA (NUEVO)
+      console.log("\n🧬 4. TAXONOMÍA: Ejecutando Benchmark de Identidad...");
+      // Medimos Hipercarga (Potencia real)
+      const Y = await NodeTaxonomy.measureHypercharge(); 
+      // Simulamos Isospín (Uptime de 120h para el ejemplo)
+      const T3 = 120; 
+      const nodeClass = NodeTaxonomy.classify(Y, T3);
+
+      console.log(`   > Hipercarga (Y): ${Y.toFixed(2)} Score (Inercia CPU)`);
+      console.log(`   > Isospín (T3):   ${T3} horas (Estabilidad)`);
+      console.log(`   > 🔰 CLASE ASIGNADA: [ ${nodeClass} ]`);
 
       // CONEXIÓN FINAL
-      console.log(`\n✨ SISTEMA ONLINE. Bóveda: ${Economy.TREASURY_WALLET}`);
+      console.log("---------------------------------------------");
+      console.log(`✨ SISTEMA ONLINE. Bóveda: ${Economy.TREASURY_WALLET}`);
       break;
 
     case 'audit':
