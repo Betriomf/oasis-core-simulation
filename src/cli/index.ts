@@ -12,159 +12,128 @@ import { LandauerLimit } from '../physics/LandauerLimit';
 import { BlackCircleSandbox } from '../blackcircle/BlackCircleSandbox';
 import { PiEngine } from '../geometry/PiEngine';
 import { NodeTaxonomy } from '../biology/NodeTaxonomy';
+import { IdentityManager } from '../security/IdentityManager';
+import { CrystallineStorage } from '../storage/CrystallineStorage';
+import { PhoenixRecovery } from '../security/PhoenixRecovery';
 
 /**
- * 🖥️ OASIS CLI (Command Line Interface) v2.2
- * El cuerpo que permite al usuario interactuar con el alma del proyecto.
- * Integra: Bootloader Físico, Taxonomía, Biología, Economía y Geometría.
+ * 🖥️ OASIS CLI v3.3 - "KILL SWITCH"
+ * Integra: Identidad Dual + Alerta + Autodestrucción Remota.
  */
+
+let LOCAL_STORAGE: any = {
+    isFirstRun: true,
+    hardwareHash: '', 
+    activeIdentity: null, 
+    readOnlyVault: [],    
+    securityInbox: []     
+};
 
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
+  const inputParam = args.slice(1).join(' '); 
 
   console.log(`
-  ░▒▓ OASIS CORE v2.2 - "THE LIVING SYSTEM" ▓▒░
+  ░▒▓ OASIS CORE v3.3 - "THE LIVING SYSTEM" ▓▒░
   ---------------------------------------------
-  Bootloader: Black Circle & Pi Engine & Taxonomy
-  Física:     Newton, Tesla, Einstein, Landauer
-  Biología:   Curie, Turing, Taxonomy
-  Economía:   Ramsey
+  Modo: Security Flares & Remote Wipe
   ---------------------------------------------
   `);
 
   switch (command) {
-    // --- BOOTLOADER v2.2 (IDENTIDAD COMPLETA) ---
     case 'start':
-      console.log("🚀 INICIANDO SECUENCIA DE ARRANQUE (BOOTLOADER v2.2)...");
-      const nodeId = Math.floor(Math.random() * 10000);
+      console.log("🚀 INICIANDO SECUENCIA DE ARRANQUE...");
+      
+      // 1. Organismo
+      if (!PiEngine.verifyCpuIntegrity(1000)) console.log("   > ⚠️ CPU Check Warning");
+      if (BlackCircleSandbox.checkThermalSafety(45) === 'SHUTDOWN') return;
 
-      // PASO 1: PI ENGINE
-      console.log("\n🥧 1. PI ENGINE: Ejecutando Serie de Leibniz (10,000 iters)...");
-      if (PiEngine.verifyCpuIntegrity(10000)) {
-          console.log("   > ✅ Integridad Verificada. CPU capaz de trabajo termodinámico.");
-      } else {
-          console.log("   > ❌ ERROR: La CPU no converge.");
-          return;
+      // 2. Alma
+      const currentHash = IdentityManager.generateHardwareHash();
+      if (LOCAL_STORAGE.isFirstRun) {
+          console.log("\n🆕 DETECTADO NUEVO HARDWARE.");
+          const freshId = await PhoenixRecovery.createFreshIdentity();
+          LOCAL_STORAGE.activeIdentity = freshId;
+          LOCAL_STORAGE.hardwareHash = currentHash;
+          LOCAL_STORAGE.isFirstRun = false;
+          console.log("   > 🔐 IDENTIDAD ACTIVA CREADA.");
+          console.log(`   > ⚠️  GUARDA LA SEMILLA: "${freshId.mnemonic}"`);
       }
 
-      // PASO 2: BLACK CIRCLE
-      console.log("\n⚫ 2. BLACK CIRCLE: Estableciendo Campo de Fuerza...");
-      const testLoad = 2048; 
-      const stress = BlackCircleSandbox.calculateBarrierStress(testLoad);
-      console.log(`   > Estrés de Barrera: ${stress.toFixed(4)} (V ~ 1/r)`);
+      const auth = IdentityManager.verifyIdentity(LOCAL_STORAGE.hardwareHash);
+      if (auth !== 'ACCESS_GRANTED') {
+          console.log("   > 🚨 ERROR: Hardware no coincide.");
+          return;
+      }
       
-      const temp = 45; 
-      const thermalState = BlackCircleSandbox.checkThermalSafety(temp);
-      console.log(`   > Estado Térmico: ${thermalState}`);
-      if (thermalState === 'SHUTDOWN') return;
+      console.log("   > 🔓 Hardware verificado. Acceso: ACTIVO.");
 
-      // PASO 3: SINCRONIZACIÓN
-      console.log("\n📡 3. RED: Calculando Fase de Weyl...");
-      const beat = PiEngine.getIrrationalHeartbeat(nodeId);
-      console.log(`   > Nodo #${nodeId} sintonizado a: ${beat}ms`);
-
-      // PASO 4: TAXONOMÍA (NUEVO)
-      console.log("\n🧬 4. TAXONOMÍA: Ejecutando Benchmark de Identidad...");
-      // Medimos Hipercarga (Potencia real)
-      const Y = await NodeTaxonomy.measureHypercharge(); 
-      // Simulamos Isospín (Uptime de 120h para el ejemplo)
-      const T3 = 120; 
-      const nodeClass = NodeTaxonomy.classify(Y, T3);
-
-      console.log(`   > Hipercarga (Y): ${Y.toFixed(2)} Score (Inercia CPU)`);
-      console.log(`   > Isospín (T3):   ${T3} horas (Estabilidad)`);
-      console.log(`   > 🔰 CLASE ASIGNADA: [ ${nodeClass} ]`);
-
-      // CONEXIÓN FINAL
-      console.log("---------------------------------------------");
-      console.log(`✨ SISTEMA ONLINE. Bóveda: ${Economy.TREASURY_WALLET}`);
+      // --- SIMULACIÓN DE RECEPCIÓN DE ALERTA ---
+      if (Math.random() > 0.1) { // Alta probabilidad para testear
+          console.log("\n🚨 📩 MENSAJE DEL SISTEMA DE SEGURIDAD:");
+          console.log("   > 'ALERTA: Alguien ha accedido a tus archivos en otro PC.'");
+          console.log("   > 'Hash del intruso: e7aee748'");
+          console.log("   > ACCIÓN RECOMENDADA: Ejecuta 'panic' para purgar.");
+      }
+      console.log("\n✨ SISTEMA ONLINE.");
       break;
 
-    case 'audit':
-      console.log("⚖️  EJECUTANDO AUDITORÍA GAUSSIANA...");
-      console.log("   > Z-Score: 0.01 (Comportamiento Honesto)");
-      console.log("   > Veredicto: NODO SEGURO.");
-      break;
-
-    case 'economy':
-      console.log("💰 ESTADO ECONÓMICO (Ramsey Rules):");
-      console.log(`   > Fee Consumidor: ${(Economy.RAMSEY_FEES.TIER_CONSUMER * 100)}%`);
-      console.log(`   > Fee Enterprise: ${(Economy.RAMSEY_FEES.TIER_ENTERPRISE * 100)}%`);
-      console.log(`   > Surge Pricing:  ${(Economy.RAMSEY_FEES.TIER_SURGE * 100)}%`);
-      break;
-
-    case 'newton':
-      console.log("🍎 SIMULACIÓN DE MECÁNICA NEWTONIANA (Decisión)...");
-      const taskNewton = { mass: 500, urgency: 2, importance: 90, infoGain: 50 };
-      console.log(`\n☄️  OBJETO: "IA Genómica" (Masa: ${taskNewton.mass}MB)`);
-      const price = NewtonianMechanics.calculateForceToMove(taskNewton.mass, taskNewton.urgency);
-      console.log(`   > Precio Inercial: ${price.toFixed(2)} SPN (F=ma)`);
-      const gravity = NewtonianMechanics.calculateGravitationalPull(taskNewton.importance, 1000, 20);
-      console.log(gravity > 10 ? "   > 🪐 RESULTADO: CAPTURA ORBITAL." : "   > 🚀 RESULTADO: FLYBY.");
-      break;
-
-    case 'tesla':
-      console.log("⚡ SIMULACIÓN DE RESONANCIA DE TESLA (Flujo)...");
-      const file = { size: 100 }; 
-      console.log(`\n📡 INTENTANDO TRANSMISIÓN (Archivo: ${file.size}MB)...`);
-      const nodeA = { lat: 50, bw: 500 }; 
-      const Z_A = TeslaResonance.calculateImpedance(nodeA.lat, file.size, nodeA.bw);
-      console.log(`   > Nodo A (Desfasado): Z = ${Z_A.toFixed(2)} Ω -> ${TeslaResonance.getResonanceQuality(Z_A, nodeA.lat)}`);
-      const nodeB = { lat: 20, bw: 100 }; 
-      const Z_B = TeslaResonance.calculateImpedance(nodeB.lat, file.size, nodeB.bw);
-      console.log(`   > Nodo B (Sintonizado): Z = ${Z_B.toFixed(2)} Ω -> ${TeslaResonance.getResonanceQuality(Z_B, nodeB.lat)}`);
-      break;
-
-    case 'einstein':
-      console.log("🌌 SIMULACIÓN DE RELATIVIDAD (Espacio-Tiempo)...");
-      console.log("\n🛑 1. TEST DE CAUSALIDAD (Minkowski):");
-      const distNY_Tokyo = 10800; 
-      const claimedTime = 20;     
-      console.log(`   > Transacción: NY -> Tokyo (${distNY_Tokyo} km) en ${claimedTime} ms.`);
-      const isFraud = EinsteinPhysics.checkCausalityViolation(distNY_Tokyo, claimedTime);
-      if (isFraud) console.log("   > 🚨 ALERTA: VIOLACIÓN DE CAUSALIDAD.");
-      else console.log("   > ✅ VÁLIDO.");
-      break;
-
-    case 'bio':
-      console.log("🧬 SISTEMAS BIOLÓGICOS AVANZADOS (v33.5)...");
+    // --- COMANDO DE ATAQUE (Para la víctima) ---
+    case 'panic':
+      console.log("🛑 INICIANDO PROTOCOLO DE PÁNICO (KILL SWITCH)...");
+      console.log("   > 1. Generando Certificado de Revocación...");
+      console.log("   > 2. Rotando claves criptográficas (Nueva Identidad Generada)...");
+      console.log("   > 3. Firmando orden de purga para la identidad comprometida...");
       
-      console.log("\n☢️  1. DECAIMIENTO DE ISÓTOPOS (144h Inactivo):");
-      const repStart = 100;
-      const hours = 144;
-      const repGamer = RadioactiveCore.decayRadiation(repStart, hours, 'GAMER');
-      console.log(`   > Gamer (PC Casa):     ${repStart} -> ${repGamer.toFixed(2)} (Cae rápido)`);
-      const repAI = RadioactiveCore.decayRadiation(repStart, hours, 'COMPUTE');
-      console.log(`   > Compute (Granja IA): ${repStart} -> ${repAI.toFixed(2)} (Estable como Enterprise)`);
+      console.log("\n📡 ENVIANDO ORDEN DE AUTODESTRUCCIÓN A LA RED...");
+      // Aquí enviaríamos el mensaje firmado a toda la red
+      console.log("   > Broadcast P2P: 'PURGE_ALL_SESSIONS(0x5a0c6b83)'");
+      console.log("   > ✅ ORDEN ENVIADA. Cualquier nodo conectado con tus claves viejas será borrado.");
+      break;
 
-      console.log("\n🛡️  2. JUICIO GAUSSIANO (¿Baneamos?):");
-      const lethalRad = 15; 
-      const judgeA = RadioactiveCore.shouldBanNode(lethalRad, 0.5, 0.1);
-      console.log(`   > Caso A (Solo tú fallas): ${judgeA.banned ? 'BANNED 🔨' : 'SAFE'} -> ${judgeA.reason}`);
-      const judgeB = RadioactiveCore.shouldBanNode(lethalRad, 14, 2); 
-      console.log(`   > Caso B (Todos fallan):   ${judgeB.banned ? 'BANNED 🔨' : 'SAFE'} -> ${judgeB.reason}`);
+    // --- COMANDO DE LECTURA (Para el ladrón/usuario recuperando) ---
+    case 'import-view':
+      console.log("🦅 PROTOCOLO FÉNIX: Importación de Solo Lectura");
       
-      console.log("\n🐆 3. MORFOGÉNESIS (Turing Patterns):");
-      const actionViral = TuringReplicator.decideState(0.8, 0.1, 0.7, 0.1);
-      console.log(`   > Viral (u=0.8, v=0.1):   ${actionViral} 🦠 (Crecimiento Exponencial)`);
-      const actionDead = TuringReplicator.decideState(0.1, 0.9, 0.1, 0.8);
-      console.log(`   > Basura (u=0.1, v=0.9):  ${actionDead} 💀 (Apoptosis / Limpieza)`);
+      if (!inputParam || inputParam.split(' ').length < 12) {
+          console.log("   > ❌ Error: Faltan palabras."); return;
+      }
 
-      console.log("\n🌡️  4. LÍMITE DE LANDAUER & ECONOMÍA:");
-      const dataBits = 1e12; 
-      const heatOasis = LandauerLimit.calculateHeatGenerated(dataBits, 'OASIS');
-      const heatClassic = LandauerLimit.calculateHeatGenerated(dataBits, 'CLASSICAL');
-      console.log(`   > Calor AWS:   ${heatClassic.toExponential(2)} J`);
-      console.log(`   > Calor Oasis: ${heatOasis.toExponential(2)} J`);
-      console.log(`   > 🌿 AHORRO:   ${LandauerLimit.getEfficiencyGain()}`);
-      console.log(`   > 💰 PRECIO:   ${LandauerLimit.calculatePriceSPN(dataBits).toFixed(4)} SPN`);
+      const importedKeys = await PhoenixRecovery.importReadOnlyIdentity(inputParam);
+
+      if (importedKeys) {
+          LOCAL_STORAGE.readOnlyVault.push(importedKeys);
+          console.log("   > ✅ ÉXITO: Identidad desencriptada.");
+          console.log("   > 👁️  MODO: READ-ONLY.");
+          console.log("\n📡 ENVIANDO BENGALA DE SEGURIDAD...");
+          console.log("   > ✅ Nodo original notificado.");
+
+          // --- AQUÍ EL LADRÓN ESPERA ---
+          console.log("\n⏳ ESCUCHANDO RED (Esperando datos)...");
+          
+          // SIMULACIÓN: El ladrón recibe la orden de pánico del dueño real
+          setTimeout(() => {
+              console.log("\n⚡ 🚨 MENSAJE PRIORITARIO RECIBIDO 🚨 ⚡");
+              console.log("   > Remitente: DUEÑO ORIGINAL (Firma Válida)");
+              console.log("   > Comando: REMOTE_WIPE (Autodestrucción)");
+              console.log("   > Ejecutando purga de memoria...");
+              
+              // Simulación de borrado
+              LOCAL_STORAGE.readOnlyVault = []; 
+              console.log("   > 🗑️ Bóveda local vaciada.");
+              console.log("   > 💀 SISTEMA COMPROMETIDO. CERRANDO.");
+              process.exit(0); // Matamos el proceso
+          }, 4000); // Pasa a los 4 segundos
+
+      } else {
+          console.log("   > ❌ ERROR: Semilla inválida.");
+      }
       break;
 
     case 'help':
     default:
-      console.log("Comandos disponibles:");
-      console.log("  start, audit, economy, newton, tesla, einstein, bio");
+      console.log("Comandos: start, import-view, panic");
       break;
   }
 }
