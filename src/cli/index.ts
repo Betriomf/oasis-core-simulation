@@ -3,16 +3,17 @@ import { EntropyValidator } from '../security/EntropyValidator';
 import { IdentityManager } from '../security/IdentityManager';
 import { PhoenixRecovery } from '../security/PhoenixRecovery';
 import { ContentFilter } from '../security/ContentFilter';
-import { DiapauseMechanism, VitalState } from '../biology/DiapauseMechanism'; // <--- NUEVO: El Canguro
+import { DiapauseMechanism, VitalState } from '../biology/DiapauseMechanism';
+import { SymbiosisProtocol } from '../biology/SymbiosisProtocol';
 import { BlackCircleSandbox } from '../blackcircle/BlackCircleSandbox';
+// Importamos el Núcleo Radiactivo Fusionado
+import { RadioactiveCore } from '../biology/RadioactiveCore';
 
 /**
- * 🖥️ OASIS CLI v3.6 - "THE RESILIENT NODE"
- * Integra: Seguridad Física + Ética + Mecanismo de Diapausa (Resiliencia).
- * Filosofía: El nodo es un organismo que protege su integridad.
+ * 🖥️ OASIS CLI v3.8 - "NUCLEAR JUSTICE"
+ * Integra: Simbiosis, Diapausa y Justicia Geométrica (Triangulación).
  */
 
-// Cargamos la memoria persistente cifrada
 let PERSISTENT_MEMORY = HardwareSecurity.loadSecureData() || {
     isFirstRun: true,
     hardwareHash: '',
@@ -20,19 +21,22 @@ let PERSISTENT_MEMORY = HardwareSecurity.loadSecureData() || {
     readOnlyVault: [],
 };
 
-// Estado vital global del nodo
 let CURRENT_VITAL_STATE: VitalState = 'GROWTH';
 
-// Función para guardar cambios en el disco de forma segura
 function saveState() {
     HardwareSecurity.saveSecureData(PERSISTENT_MEMORY);
 }
 
-// Actualizamos los signos vitales (Espacio, Energía, Legalidad)
-function updateVitalSigns() {
-    // Simulamos telemetría de hardware (en producción usaríamos sensores reales)
-    const telemetry = DiapauseMechanism.getSimulatedTelemetry();
+// Chequeo de signos vitales y Simbiosis
+async function updateVitalSigns() {
+    const symbiosisStatus = await SymbiosisProtocol.maintainHomeostasis();
     
+    if (symbiosisStatus === 'HIBERNATING') {
+        CURRENT_VITAL_STATE = 'HIBERNATION';
+        return;
+    }
+
+    const telemetry = DiapauseMechanism.getSimulatedTelemetry();
     CURRENT_VITAL_STATE = DiapauseMechanism.checkMetabolism(
         telemetry.diskUsage,
         telemetry.battery,
@@ -45,120 +49,101 @@ async function main() {
   const command = args[0];
   const inputParam = args.slice(1).join(' ');
 
-  // Encabezado visual
-  console.log(`
-  ░▒▓ OASIS CORE v3.6 - "THE RESILIENT NODE" ▓▒░
-  ----------------------------------------------
-  Estado: ${CURRENT_VITAL_STATE} (Modo: ${CURRENT_VITAL_STATE === 'GROWTH' ? 'Escritura/Lectura' : 'Solo Lectura'})
-  ----------------------------------------------
-  `);
+  await updateVitalSigns();
 
-  // Chequeo de signos vitales antes de cualquier operación
-  updateVitalSigns();
+  console.log(`
+  ░▒▓ OASIS CORE v3.8 - "NUCLEAR JUSTICE" ▓▒░
+  -------------------------------------------
+  Estado: ${CURRENT_VITAL_STATE} 
+  Simbiosis: ${CURRENT_VITAL_STATE === 'HIBERNATION' ? '⚠️ RESTRICTED' : '✅ ACTIVE'}
+  -------------------------------------------
+  `);
 
   switch (command) {
     case 'start':
-      console.log("🚀 INICIANDO SISTEMA BIOLÓGICO...");
-
-      // 1. SEGURIDAD FÍSICA (HSM + ENTROPY)
-      console.log("🛡️  Verificando Integridad de Hardware...");
+      console.log("🚀 INICIANDO SISTEMA...");
       try {
-          const cpuTime = HardwareSecurity.runProofOfWork();
-          if (!EntropyValidator.validatePhysicalCore()) {
-               throw new Error("Entropía insuficiente. Hardware virtual detectado.");
-          }
-          console.log(`   > ✅ Hardware: Verificado (Silicio Real - ${cpuTime.toFixed(2)}ms).`);
+          HardwareSecurity.runProofOfWork();
+          if (!EntropyValidator.validatePhysicalCore()) throw new Error("Virtual HW");
+          console.log("   > ✅ Hardware: Silicio Real Validado.");
       } catch (e: any) {
-          console.error(`   > 🚨 ERROR CRÍTICO: ${e.message}`);
+          console.error(`   > 🚨 ERROR: ${e.message}`);
           process.exit(1);
       }
-
-      // 2. DIAGNÓSTICO DE DIAPAUSA (El Canguro)
-      console.log("🩺 Chequeo Metabólico:");
-      if (CURRENT_VITAL_STATE === 'GROWTH') {
-          console.log("   > 🟢 Signos Vitales Óptimos. Crecimiento activo.");
-      } else if (CURRENT_VITAL_STATE === 'DIAPAUSE') {
-          console.log("   > 🟠 ALERTA: Recursos bajos. Entrando en DIAPAUSA (Solo Lectura).");
+      
+      if (CURRENT_VITAL_STATE === 'HIBERNATION') {
+          console.log("   > ❄️  NODO ENFRIANDO: Protocolo Hafnio activo.");
       } else {
-          console.log(`   > 🔴 ESTADO CRÍTICO: ${CURRENT_VITAL_STATE}`);
+          console.log("   > 🧬 SIMBIOSIS ESTABLE.");
       }
 
-      // Check Térmico de seguridad
-      if (BlackCircleSandbox.checkThermalSafety(45) === 'SHUTDOWN') return;
-
-      // 3. GESTIÓN DE IDENTIDAD
       if (PERSISTENT_MEMORY.isFirstRun) {
-          console.log("\n🆕 DETECTADO NUEVO HARDWARE...");
           const freshId = await PhoenixRecovery.createFreshIdentity();
           PERSISTENT_MEMORY.activeIdentity = freshId;
           PERSISTENT_MEMORY.hardwareHash = IdentityManager.generateHardwareHash();
           PERSISTENT_MEMORY.isFirstRun = false;
           saveState();
-          console.log("   > 🔐 Identidad Creada y Cifrada.");
-          console.log(`   > ⚠️  SEMILLA: "${freshId.mnemonic}"`);
+          console.log("   > 🔐 Identidad Creada.");
       }
-      
-      // Verificación de vinculación hardware
-      const auth = IdentityManager.verifyIdentity(PERSISTENT_MEMORY.hardwareHash);
-      if (auth !== 'ACCESS_GRANTED') {
-          console.log("   > 🚨 ERROR: Hardware no coincide con la Bóveda.");
-          return;
-      }
-
-      console.log("\n✨ NODO ONLINE. Esperando instrucciones.");
+      console.log("\n✨ SISTEMA ONLINE.");
       break;
 
     case 'store':
-      console.log("📦 INTENTO DE ALMACENAMIENTO (CONCEPCIÓN)...");
-      
-      // 1. VERIFICAR DIAPAUSA (¿Podemos concebir?)
       if (!DiapauseMechanism.canConceive(CURRENT_VITAL_STATE)) {
-          console.log("   > ⛔ RECHAZADO: El nodo está en Diapausa/Hibernación.");
-          console.log("   > 💡 Solución: Libera espacio en disco o conecta el cargador.");
+          console.log("   > ⛔ ACCIÓN BLOQUEADA: Diapausa activa.");
           return;
       }
-
-      // 2. VERIFICAR ÉTICA (Content Filter)
       const content = inputParam || "test";
       if (ContentFilter.validateContent(content)) {
-          console.log("   > ✅ Ética: Aprobada (Hash limpio).");
-          console.log("   > 💾 Guardando en Crystalline Storage...");
-          // Aquí iría la lógica real de escritura en disco
-          console.log("   > ✨ ÉXITO: Archivo asimilado y replicado.");
+          console.log("   > ✅ Ética OK. Guardando...");
+          console.log("   > ✨ ÉXITO.");
       } else {
-          console.log("   > ❌ RECHAZADO: Contenido prohibido por protocolo ético.");
+          console.log("   > ❌ RECHAZADO: Ética.");
       }
+      break;
+
+    // --- COMANDO DE AUDITORÍA NUCLEAR (Nuevo) ---
+    case 'audit':
+      console.log("☢️  INICIANDO AUDITORÍA DE RADIACIÓN (TRIANGULACIÓN)...");
+      
+      // 1. Prueba de Justicia (3 Testigos)
+      const witnessesToxic = [6.0, 5.5, 7.0]; // Dosis letales
+      const isToxic = RadioactiveCore.confirmToxicity(witnessesToxic);
+      console.log(`   > Juicio de Toxicidad (3 testigos): ${isToxic ? 'CULPABLE (BAN)' : 'INOCENTE'}`);
+
+      // 2. Prueba de Estabilidad (Decaimiento Relativista)
+      console.log("\n📐 CÁLCULO DE ESTABILIDAD (Decaimiento):");
+      
+      // Nodo Solitario (Gamma 1.0, Sin Triangulación)
+      // Usamos un valor alto inicial (ej. 10.0 Sv) para ver como baja
+      const radSolo = RadioactiveCore.decayRadiation(10.0, 3600, 'GAMER', 1.0, false);
+      
+      // Nodo Triangulado (Gamma 1.0, CON Triangulación = true)
+      const radTriad = RadioactiveCore.decayRadiation(10.0, 3600, 'GAMER', 1.0, true);
+      
+      console.log(`   > Radiación residual (Solo): ${radSolo.toFixed(4)} Sv`);
+      console.log(`   > Radiación residual (Triangulado): ${radTriad.toFixed(4)} Sv`);
+      console.log(`   > EFECTO: La triangulación retiene mejor la estabilidad.`);
+      
+      // 3. Prueba Gaussiana (Simulada)
+      console.log("\n📊 JUICIO GAUSSIANO (Contexto Global):");
+      // Nodo con 5.5 Sv (Letal), pero la Red tiene media 5.0 (Todos están mal)
+      const judgment = RadioactiveCore.shouldBanNode(5.5, 5.0, 1.0); 
+      console.log(`   > Veredicto: ${judgment.banned ? 'BAN' : 'PERDONADO'} (${judgment.reason})`);
       break;
 
     case 'status':
-        console.log("📊 INFORME DE ESTADO:");
-        console.log(`   > Metabolismo: ${CURRENT_VITAL_STATE}`);
-        console.log(`   > Simulación Disco: 45% (Simulado)`);
-        console.log(`   > Simulación Batería: 100% (Simulado)`);
-        console.log(`   > Integridad Ética: 100%`);
+        console.log("📊 INFORME DE SIMBIOSIS:");
+        console.log(`   > Estado Vital: ${CURRENT_VITAL_STATE}`);
         break;
 
     case 'panic':
-      console.log("🛑 EJECUTANDO KILL SWITCH...");
-      try { 
-          const fs = require('fs');
-          if (fs.existsSync('./oasis_secure_vault.enc')) {
-            fs.unlinkSync('./oasis_secure_vault.enc'); 
-            console.log("   > 🗑️ Identidad borrada del disco.");
-          } else {
-            console.log("   > ⚠️ No se encontró bóveda para borrar.");
-          }
-      } catch(e){}
+      try { require('fs').unlinkSync('./oasis_secure_vault.enc'); } catch(e){}
       console.log("   > 💀 SISTEMA NEUTRALIZADO.");
       break;
 
-    case 'help':
     default:
-      console.log("Comandos disponibles:");
-      console.log("  start        -> Inicia el nodo con chequeo físico y biológico.");
-      console.log("  store [txt]  -> Intenta guardar un archivo (respeta Diapausa y Ética).");
-      console.log("  status       -> Muestra los signos vitales simulados.");
-      console.log("  panic        -> Autodestrucción de claves.");
+      console.log("Comandos: start, store, audit, status, panic");
       break;
   }
 }
