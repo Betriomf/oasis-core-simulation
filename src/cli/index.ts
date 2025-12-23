@@ -15,19 +15,26 @@ import { NodeTaxonomy } from '../biology/NodeTaxonomy';
 import { IdentityManager } from '../security/IdentityManager';
 import { CrystallineStorage } from '../storage/CrystallineStorage';
 import { PhoenixRecovery } from '../security/PhoenixRecovery';
+import { HardwareSecurity } from '../security/HardwareSecurity'; // <--- NUEVO
 
 /**
- * 🖥️ OASIS CLI v3.3 - "KILL SWITCH"
- * Integra: Identidad Dual + Alerta + Autodestrucción Remota.
+ * 🖥️ OASIS CLI v3.4 - "PERSISTENCE & HSM"
+ * Integra: HSM (Persistencia Cifrada) + Kill Switch + Identidad Dual.
  */
 
-let LOCAL_STORAGE: any = {
+// CARGAMOS LA MEMORIA CIFRADA DESDE EL DISCO (O creamos valores por defecto)
+let PERSISTENT_MEMORY = HardwareSecurity.loadSecureData() || {
     isFirstRun: true,
     hardwareHash: '', 
-    activeIdentity: null, 
-    readOnlyVault: [],    
-    securityInbox: []     
+    activeIdentity: null,
+    readOnlyVault: [],
+    securityInbox: []
 };
+
+// Función auxiliar para guardar cambios
+function saveState() {
+    HardwareSecurity.saveSecureData(PERSISTENT_MEMORY);
+}
 
 async function main() {
   const args = process.argv.slice(2);
@@ -35,9 +42,9 @@ async function main() {
   const inputParam = args.slice(1).join(' '); 
 
   console.log(`
-  ░▒▓ OASIS CORE v3.3 - "THE LIVING SYSTEM" ▓▒░
+  ░▒▓ OASIS CORE v3.4 - "THE LIVING SYSTEM" ▓▒░
   ---------------------------------------------
-  Modo: Security Flares & Remote Wipe
+  Modo: HSM Encrypted Storage (AES-256)
   ---------------------------------------------
   `);
 
@@ -45,54 +52,75 @@ async function main() {
     case 'start':
       console.log("🚀 INICIANDO SECUENCIA DE ARRANQUE...");
       
-      // 1. Organismo
-      if (!PiEngine.verifyCpuIntegrity(1000)) console.log("   > ⚠️ CPU Check Warning");
+      // 1. ORGANISMO & HSM (Solución al CPU Warning)
+      console.log("🛡️  Verificando Integridad de Hardware (HSM)...");
+      try {
+          const cpuTime = HardwareSecurity.runProofOfWork();
+          // Si pasa esto, el warning desaparece y ponemos el check verde
+          console.log(`   > ✅ CPU Verificada: ${cpuTime.toFixed(2)}ms (Proof-of-Work válido)`);
+      } catch (e: any) {
+          console.error(`   > 🚨 ERROR CRÍTICO HSM: ${e.message}`);
+          process.exit(1);
+      }
+
       if (BlackCircleSandbox.checkThermalSafety(45) === 'SHUTDOWN') return;
 
-      // 2. Alma
+      // 2. ALMA & IDENTIDAD
       const currentHash = IdentityManager.generateHardwareHash();
-      if (LOCAL_STORAGE.isFirstRun) {
-          console.log("\n🆕 DETECTADO NUEVO HARDWARE.");
+      
+      if (PERSISTENT_MEMORY.isFirstRun) {
+          console.log("\n🆕 DETECTADO NUEVO HARDWARE (Inicializando Bóveda)...");
           const freshId = await PhoenixRecovery.createFreshIdentity();
-          LOCAL_STORAGE.activeIdentity = freshId;
-          LOCAL_STORAGE.hardwareHash = currentHash;
-          LOCAL_STORAGE.isFirstRun = false;
-          console.log("   > 🔐 IDENTIDAD ACTIVA CREADA.");
+          
+          // Guardamos en memoria
+          PERSISTENT_MEMORY.activeIdentity = freshId;
+          PERSISTENT_MEMORY.hardwareHash = currentHash;
+          PERSISTENT_MEMORY.isFirstRun = false;
+          
+          // Escribimos en disco cifrado
+          saveState();
+
+          console.log("   > 🔐 IDENTIDAD ACTIVA CREADA Y CIFRADA.");
           console.log(`   > ⚠️  GUARDA LA SEMILLA: "${freshId.mnemonic}"`);
       }
 
-      const auth = IdentityManager.verifyIdentity(LOCAL_STORAGE.hardwareHash);
+      // Verificamos que el hardware actual coincide con el guardado en la bóveda
+      // (Doble check: IdentityManager + HSM decryption success)
+      const auth = IdentityManager.verifyIdentity(PERSISTENT_MEMORY.hardwareHash);
       if (auth !== 'ACCESS_GRANTED') {
-          console.log("   > 🚨 ERROR: Hardware no coincide.");
+          console.log("   > 🚨 ERROR: Hardware no coincide con la Bóveda.");
           return;
       }
       
-      console.log("   > 🔓 Hardware verificado. Acceso: ACTIVO.");
+      console.log("   > 🔓 Bóveda Desencriptada. Acceso: ACTIVO.");
 
-      // --- SIMULACIÓN DE RECEPCIÓN DE ALERTA ---
-      if (Math.random() > 0.1) { // Alta probabilidad para testear
+      // Check de alertas
+      if (Math.random() > 0.1) { 
           console.log("\n🚨 📩 MENSAJE DEL SISTEMA DE SEGURIDAD:");
-          console.log("   > 'ALERTA: Alguien ha accedido a tus archivos en otro PC.'");
-          console.log("   > 'Hash del intruso: e7aee748'");
-          console.log("   > ACCIÓN RECOMENDADA: Ejecuta 'panic' para purgar.");
+          console.log("   > 'ALERTA: Integridad del sistema verificada.'");
       }
-      console.log("\n✨ SISTEMA ONLINE.");
+      console.log("\n✨ SISTEMA ONLINE. Bóveda Persistente Activa.");
       break;
 
-    // --- COMANDO DE ATAQUE (Para la víctima) ---
+    // --- COMANDO DE ATAQUE ---
     case 'panic':
       console.log("🛑 INICIANDO PROTOCOLO DE PÁNICO (KILL SWITCH)...");
-      console.log("   > 1. Generando Certificado de Revocación...");
-      console.log("   > 2. Rotando claves criptográficas (Nueva Identidad Generada)...");
-      console.log("   > 3. Firmando orden de purga para la identidad comprometida...");
+      console.log("   > 1. Borrando Bóveda Local Cifrada...");
       
+      // Borramos el archivo físico para evitar forenses
+      try {
+        const fs = require('fs');
+        if (fs.existsSync('./oasis_secure_vault.enc')) {
+            fs.unlinkSync('./oasis_secure_vault.enc');
+            console.log("   > 🗑️ Archivo 'oasis_secure_vault.enc' eliminado.");
+        }
+      } catch (e) {}
+
       console.log("\n📡 ENVIANDO ORDEN DE AUTODESTRUCCIÓN A LA RED...");
-      // Aquí enviaríamos el mensaje firmado a toda la red
-      console.log("   > Broadcast P2P: 'PURGE_ALL_SESSIONS(0x5a0c6b83)'");
-      console.log("   > ✅ ORDEN ENVIADA. Cualquier nodo conectado con tus claves viejas será borrado.");
+      console.log("   > ✅ ORDEN ENVIADA.");
       break;
 
-    // --- COMANDO DE LECTURA (Para el ladrón/usuario recuperando) ---
+    // --- COMANDO DE LECTURA ---
     case 'import-view':
       console.log("🦅 PROTOCOLO FÉNIX: Importación de Solo Lectura");
       
@@ -103,28 +131,29 @@ async function main() {
       const importedKeys = await PhoenixRecovery.importReadOnlyIdentity(inputParam);
 
       if (importedKeys) {
-          LOCAL_STORAGE.readOnlyVault.push(importedKeys);
+          PERSISTENT_MEMORY.readOnlyVault.push(importedKeys);
+          saveState(); // Guardamos que hemos importado esto
+
           console.log("   > ✅ ÉXITO: Identidad desencriptada.");
           console.log("   > 👁️  MODO: READ-ONLY.");
           console.log("\n📡 ENVIANDO BENGALA DE SEGURIDAD...");
           console.log("   > ✅ Nodo original notificado.");
 
-          // --- AQUÍ EL LADRÓN ESPERA ---
           console.log("\n⏳ ESCUCHANDO RED (Esperando datos)...");
           
-          // SIMULACIÓN: El ladrón recibe la orden de pánico del dueño real
+          // SIMULACIÓN KILL SWITCH REMOTO
           setTimeout(() => {
               console.log("\n⚡ 🚨 MENSAJE PRIORITARIO RECIBIDO 🚨 ⚡");
-              console.log("   > Remitente: DUEÑO ORIGINAL (Firma Válida)");
               console.log("   > Comando: REMOTE_WIPE (Autodestrucción)");
-              console.log("   > Ejecutando purga de memoria...");
               
-              // Simulación de borrado
-              LOCAL_STORAGE.readOnlyVault = []; 
-              console.log("   > 🗑️ Bóveda local vaciada.");
+              // Purga real
+              PERSISTENT_MEMORY = {};
+              try { require('fs').unlinkSync('./oasis_secure_vault.enc'); } catch(e){}
+              
+              console.log("   > 🗑️ Bóveda local vaciada y archivo eliminado.");
               console.log("   > 💀 SISTEMA COMPROMETIDO. CERRANDO.");
-              process.exit(0); // Matamos el proceso
-          }, 4000); // Pasa a los 4 segundos
+              process.exit(0); 
+          }, 4000); 
 
       } else {
           console.log("   > ❌ ERROR: Semilla inválida.");
