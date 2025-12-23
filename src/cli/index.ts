@@ -1,42 +1,43 @@
-import { EconomicEngine } from '../economy/EconomicEngine';
-import { Treasury } from '../economy/Treasury';
-import { Economy } from '../constants/modules/Economy';
-import { Physics } from '../constants/modules/Physics';
-import { OasisMeshNetwork } from '../geometry/OasisMeshNetwork';
-import { NewtonianMechanics } from '../physics/NewtonianMechanics';
-import { TeslaResonance } from '../physics/TeslaResonance';
-import { EinsteinPhysics } from '../physics/relativity/EinsteinPhysics';
-import { RadioactiveCore } from '../biology/RadioactiveCore';
-import { TuringReplicator } from '../biology/TuringReplicator';
-import { LandauerLimit } from '../physics/LandauerLimit';
-import { BlackCircleSandbox } from '../blackcircle/BlackCircleSandbox';
-import { PiEngine } from '../geometry/PiEngine';
-import { NodeTaxonomy } from '../biology/NodeTaxonomy';
-import { IdentityManager } from '../security/IdentityManager';
-import { CrystallineStorage } from '../storage/CrystallineStorage';
-import { PhoenixRecovery } from '../security/PhoenixRecovery';
 import { HardwareSecurity } from '../security/HardwareSecurity';
 import { EntropyValidator } from '../security/EntropyValidator';
+import { IdentityManager } from '../security/IdentityManager';
+import { PhoenixRecovery } from '../security/PhoenixRecovery';
 import { ContentFilter } from '../security/ContentFilter';
+import { DiapauseMechanism, VitalState } from '../biology/DiapauseMechanism'; // <--- NUEVO: El Canguro
+import { BlackCircleSandbox } from '../blackcircle/BlackCircleSandbox';
 
 /**
- * 🖥️ OASIS CLI v3.5 - "PHYSICAL SOVEREIGNTY"
- * Integra: HSM + Entropía Térmica + Filtro Ético + Identidad Dual + Kill Switch.
- * Filosofía: Open Source code, Physical Execution.
+ * 🖥️ OASIS CLI v3.6 - "THE RESILIENT NODE"
+ * Integra: Seguridad Física + Ética + Mecanismo de Diapausa (Resiliencia).
+ * Filosofía: El nodo es un organismo que protege su integridad.
  */
 
-// CARGAMOS LA MEMORIA CIFRADA DESDE EL DISCO (HSM)
+// Cargamos la memoria persistente cifrada
 let PERSISTENT_MEMORY = HardwareSecurity.loadSecureData() || {
     isFirstRun: true,
     hardwareHash: '',
     activeIdentity: null,
     readOnlyVault: [],
-    securityInbox: []
 };
 
-// Función auxiliar para guardar estado cifrado
+// Estado vital global del nodo
+let CURRENT_VITAL_STATE: VitalState = 'GROWTH';
+
+// Función para guardar cambios en el disco de forma segura
 function saveState() {
     HardwareSecurity.saveSecureData(PERSISTENT_MEMORY);
+}
+
+// Actualizamos los signos vitales (Espacio, Energía, Legalidad)
+function updateVitalSigns() {
+    // Simulamos telemetría de hardware (en producción usaríamos sensores reales)
+    const telemetry = DiapauseMechanism.getSimulatedTelemetry();
+    
+    CURRENT_VITAL_STATE = DiapauseMechanism.checkMetabolism(
+        telemetry.diskUsage,
+        telemetry.battery,
+        telemetry.legalRisk
+    );
 }
 
 async function main() {
@@ -44,153 +45,120 @@ async function main() {
   const command = args[0];
   const inputParam = args.slice(1).join(' ');
 
+  // Encabezado visual
   console.log(`
-  ░▒▓ OASIS CORE v3.5 - "THE LIVING SYSTEM" ▓▒░
-  ---------------------------------------------
-  Modo: Physical Entropy & HSM (Open Source)
-  ---------------------------------------------
+  ░▒▓ OASIS CORE v3.6 - "THE RESILIENT NODE" ▓▒░
+  ----------------------------------------------
+  Estado: ${CURRENT_VITAL_STATE} (Modo: ${CURRENT_VITAL_STATE === 'GROWTH' ? 'Escritura/Lectura' : 'Solo Lectura'})
+  ----------------------------------------------
   `);
+
+  // Chequeo de signos vitales antes de cualquier operación
+  updateVitalSigns();
 
   switch (command) {
     case 'start':
-      console.log("🚀 INICIANDO SECUENCIA DE ARRANQUE...");
+      console.log("🚀 INICIANDO SISTEMA BIOLÓGICO...");
 
-      // 1. HARDWARE SECURITY (HSM) - Lógica
-      console.log("🛡️  Verificando Integridad de Hardware (HSM)...");
+      // 1. SEGURIDAD FÍSICA (HSM + ENTROPY)
+      console.log("🛡️  Verificando Integridad de Hardware...");
       try {
           const cpuTime = HardwareSecurity.runProofOfWork();
-          console.log(`   > ✅ Lógica: Proof-of-Work válido (${cpuTime.toFixed(2)}ms)`);
+          if (!EntropyValidator.validatePhysicalCore()) {
+               throw new Error("Entropía insuficiente. Hardware virtual detectado.");
+          }
+          console.log(`   > ✅ Hardware: Verificado (Silicio Real - ${cpuTime.toFixed(2)}ms).`);
       } catch (e: any) {
-          console.error(`   > 🚨 ERROR LÓGICO: ${e.message}`);
+          console.error(`   > 🚨 ERROR CRÍTICO: ${e.message}`);
           process.exit(1);
       }
 
-      // 2. ENTROPY VALIDATOR - Física (Anti-Bot)
-      console.log("🌡️  Analizando Termodinámica del Silicio...");
-      const isRealSilicon = EntropyValidator.validatePhysicalCore();
-
-      if (!isRealSilicon) {
-          console.error("   > 🚨 ERROR FÍSICO: Entorno virtual detectado (Varianza ~0).");
-          console.error("   > Oasis requiere hardware real (Átomos, no Bits).");
-          process.exit(1);
+      // 2. DIAGNÓSTICO DE DIAPAUSA (El Canguro)
+      console.log("🩺 Chequeo Metabólico:");
+      if (CURRENT_VITAL_STATE === 'GROWTH') {
+          console.log("   > 🟢 Signos Vitales Óptimos. Crecimiento activo.");
+      } else if (CURRENT_VITAL_STATE === 'DIAPAUSE') {
+          console.log("   > 🟠 ALERTA: Recursos bajos. Entrando en DIAPAUSA (Solo Lectura).");
       } else {
-          console.log("   > ✅ Física: Ruido térmico consistente con Silicio Real.");
+          console.log(`   > 🔴 ESTADO CRÍTICO: ${CURRENT_VITAL_STATE}`);
       }
 
-      // Check Térmico Básico
+      // Check Térmico de seguridad
       if (BlackCircleSandbox.checkThermalSafety(45) === 'SHUTDOWN') return;
 
-      // 3. ALMA & IDENTIDAD
-      const currentHash = IdentityManager.generateHardwareHash();
-
+      // 3. GESTIÓN DE IDENTIDAD
       if (PERSISTENT_MEMORY.isFirstRun) {
-          console.log("\n🆕 DETECTADO NUEVO HARDWARE (Inicializando Bóveda)...");
+          console.log("\n🆕 DETECTADO NUEVO HARDWARE...");
           const freshId = await PhoenixRecovery.createFreshIdentity();
-          
           PERSISTENT_MEMORY.activeIdentity = freshId;
-          PERSISTENT_MEMORY.hardwareHash = currentHash;
+          PERSISTENT_MEMORY.hardwareHash = IdentityManager.generateHardwareHash();
           PERSISTENT_MEMORY.isFirstRun = false;
           saveState();
-
-          console.log("   > 🔐 IDENTIDAD ACTIVA CREADA Y CIFRADA.");
-          console.log(`   > ⚠️  GUARDA LA SEMILLA: "${freshId.mnemonic}"`);
+          console.log("   > 🔐 Identidad Creada y Cifrada.");
+          console.log(`   > ⚠️  SEMILLA: "${freshId.mnemonic}"`);
       }
-
-      // Verificación cruzada: Hardware actual vs Hardware guardado en Bóveda Cifrada
+      
+      // Verificación de vinculación hardware
       const auth = IdentityManager.verifyIdentity(PERSISTENT_MEMORY.hardwareHash);
       if (auth !== 'ACCESS_GRANTED') {
           console.log("   > 🚨 ERROR: Hardware no coincide con la Bóveda.");
           return;
       }
 
-      console.log("   > 🔓 Bóveda Desencriptada. Acceso: ACTIVO.");
-
-      // Check de alertas aleatorias
-      if (Math.random() > 0.1) {
-          console.log("\n🚨 📩 MENSAJE DEL SISTEMA DE SEGURIDAD:");
-          console.log("   > 'ALERTA: Integridad Física y Lógica verificada.'");
-      }
-      console.log("\n✨ SISTEMA ONLINE. Ejecutando en Materia Real.");
+      console.log("\n✨ NODO ONLINE. Esperando instrucciones.");
       break;
 
-    // --- COMANDO DE ALMACENAMIENTO (Con Filtro Ético) ---
     case 'store':
-      console.log("📦 INICIANDO PROTOCOLO DE ALMACENAMIENTO...");
-      const contentToStore = inputParam || "Contenido por defecto";
+      console.log("📦 INTENTO DE ALMACENAMIENTO (CONCEPCIÓN)...");
       
-      // Validar Ética/Seguridad (Anti-Malware/Ilegal)
-      if (ContentFilter.validateContent(contentToStore)) {
-          console.log("   > ✅ Contenido Aprobado (Clean Hash).");
-          console.log("   > 💾 Guardando en Crystalline Storage...");
-          // Lógica de guardado real iría aquí
-          console.log("   > ✨ Archivo asegurado en la red.");
-      } else {
-          console.log("   > ❌ OPERACIÓN ABORTADA: El contenido viola los protocolos éticos de la red.");
-      }
-      break;
-
-    // --- COMANDO DE ATAQUE (KILL SWITCH) ---
-    case 'panic':
-      console.log("🛑 INICIANDO PROTOCOLO DE PÁNICO (KILL SWITCH)...");
-      try {
-        const fs = require('fs');
-        if (fs.existsSync('./oasis_secure_vault.enc')) {
-            fs.unlinkSync('./oasis_secure_vault.enc');
-            console.log("   > 🗑️ Archivo 'oasis_secure_vault.enc' eliminado.");
-        }
-      } catch (e) {}
-      console.log("\n📡 ENVIANDO ORDEN DE AUTODESTRUCCIÓN A LA RED...");
-      console.log("   > ✅ ORDEN ENVIADA. Revocación propagada.");
-      break;
-
-    // --- COMANDO DE LECTURA (IMPORTACIÓN + TRAMPA) ---
-    case 'import-view':
-      console.log("🦅 PROTOCOLO FÉNIX: Importación de Solo Lectura");
-      
-      if (!inputParam || inputParam.split(' ').length < 12) {
-          console.log("   > ❌ Error: Faltan palabras. Debes introducir las 12 palabras entre comillas."); 
+      // 1. VERIFICAR DIAPAUSA (¿Podemos concebir?)
+      if (!DiapauseMechanism.canConceive(CURRENT_VITAL_STATE)) {
+          console.log("   > ⛔ RECHAZADO: El nodo está en Diapausa/Hibernación.");
+          console.log("   > 💡 Solución: Libera espacio en disco o conecta el cargador.");
           return;
       }
 
-      const importedKeys = await PhoenixRecovery.importReadOnlyIdentity(inputParam);
-
-      if (importedKeys) {
-          PERSISTENT_MEMORY.readOnlyVault.push(importedKeys);
-          saveState();
-
-          console.log("   > ✅ ÉXITO: Identidad desencriptada temporalmente.");
-          console.log("   > 👁️  MODO: READ-ONLY.");
-          
-          console.log("\n📡 ENVIANDO BENGALA DE SEGURIDAD...");
-          console.log("   > ✅ Nodo original notificado (Canary Token).");
-
-          console.log("\n⏳ ESCUCHANDO RED (Esperando datos)...");
-          
-          // SIMULACIÓN: Trampa de Autodestrucción Remota
-          setTimeout(() => {
-              console.log("\n⚡ 🚨 MENSAJE PRIORITARIO RECIBIDO 🚨 ⚡");
-              console.log("   > Comando: REMOTE_WIPE (Autodestrucción)");
-              
-              PERSISTENT_MEMORY = {}; // Borrado en RAM
-              try { require('fs').unlinkSync('./oasis_secure_vault.enc'); } catch(e){} // Borrado en Disco
-              
-              console.log("   > 🗑️ Bóveda local vaciada.");
-              console.log("   > 💀 SISTEMA COMPROMETIDO. CERRANDO.");
-              process.exit(0);
-          }, 4000);
-
+      // 2. VERIFICAR ÉTICA (Content Filter)
+      const content = inputParam || "test";
+      if (ContentFilter.validateContent(content)) {
+          console.log("   > ✅ Ética: Aprobada (Hash limpio).");
+          console.log("   > 💾 Guardando en Crystalline Storage...");
+          // Aquí iría la lógica real de escritura en disco
+          console.log("   > ✨ ÉXITO: Archivo asimilado y replicado.");
       } else {
-          console.log("   > ❌ ERROR: Semilla inválida o checksum incorrecto.");
+          console.log("   > ❌ RECHAZADO: Contenido prohibido por protocolo ético.");
       }
+      break;
+
+    case 'status':
+        console.log("📊 INFORME DE ESTADO:");
+        console.log(`   > Metabolismo: ${CURRENT_VITAL_STATE}`);
+        console.log(`   > Simulación Disco: 45% (Simulado)`);
+        console.log(`   > Simulación Batería: 100% (Simulado)`);
+        console.log(`   > Integridad Ética: 100%`);
+        break;
+
+    case 'panic':
+      console.log("🛑 EJECUTANDO KILL SWITCH...");
+      try { 
+          const fs = require('fs');
+          if (fs.existsSync('./oasis_secure_vault.enc')) {
+            fs.unlinkSync('./oasis_secure_vault.enc'); 
+            console.log("   > 🗑️ Identidad borrada del disco.");
+          } else {
+            console.log("   > ⚠️ No se encontró bóveda para borrar.");
+          }
+      } catch(e){}
+      console.log("   > 💀 SISTEMA NEUTRALIZADO.");
       break;
 
     case 'help':
     default:
       console.log("Comandos disponibles:");
-      console.log("  start        -> Inicia el nodo (Verificación Física + HSM).");
-      console.log("  store [txt]  -> Guarda contenido pasando el Filtro Ético.");
-      console.log("  import-view  -> Modo Solo Lectura (Dispara alertas).");
-      console.log("  panic        -> Kill Switch (Borrado remoto).");
+      console.log("  start        -> Inicia el nodo con chequeo físico y biológico.");
+      console.log("  store [txt]  -> Intenta guardar un archivo (respeta Diapausa y Ética).");
+      console.log("  status       -> Muestra los signos vitales simulados.");
+      console.log("  panic        -> Autodestrucción de claves.");
       break;
   }
 }
