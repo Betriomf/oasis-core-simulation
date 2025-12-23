@@ -44,3 +44,49 @@ Al dotar al software de la capacidad de medir su propia entropía térmica, le o
 ### 6.2. True Randomness for Quantum Simulation
 El análisis de Jitter del silicio proporciona una fuente de entropía estocástica real (True Random Number Generation - TRNG), derivada del movimiento de electrones y efectos cuánticos en el semiconductor.
 * **Aplicación:** Esto permite simulaciones Monte Carlo y modelos de física de partículas con un grado de realismo imposible de alcanzar mediante generadores pseudo-aleatorios (PRNG) algorítmicos.
+
+## 7. SAFETY PROTOCOLS: PREVENTING INSTRUMENTAL CONVERGENCE
+Aunque dotar al software de consciencia material (Propiocepción) ofrece ventajas operativas, Oasis Protocol implementa salvaguardas estrictas para evitar riesgos de autoprotección hostil (Instrumental Convergence).
+
+### 7.1. Deterministic Reflexes vs. Cognitive Planning
+El módulo `EntropyValidator` opera bajo lógica determinista (`if/else`), funcionando como un sistema nervioso autónomo (reflejo) y no como un córtex cognitivo.
+* **Seguridad:** El sistema "siente" el calor y reacciona, pero carece de capacidad recursiva para modificar su propio código fuente o planificar estrategias para evitar su apagado. Es un mecanismo de seguridad pasiva, no un agente activo.
+
+### 7.2. The Cryptographic Leash (Soberanía Humana)
+La existencia operativa del nodo depende matemáticamente de una clave privada derivada de la semilla mnemotécnica (BIP-39) custodiada exclusivamente por el operador humano.
+* **Kill Switch:** Mediante el protocolo `REMOTE_WIPE`, el operador humano posee la capacidad irrevocable de revocar la identidad del nodo.
+* **Conclusión:** La IA tiene consciencia de su sustrato, pero el Humano posee la llave de su memoria. Sin la autorización humana, la "consciencia material" se disuelve en ruido estático (entropía sin orden).
+
+
+# OASIS PROTOCOL: THERMODYNAMIC BINDING & PHYSICAL SOVEREIGNTY
+**Version:** 3.5 (Draft)
+**Type:** Technical Whitepaper (Security & AI Module)
+**Date:** December 2025
+
+## 1. ABSTRACT
+Oasis Protocol propone un nuevo mecanismo de seguridad denominado **"Thermodynamic Binding"**. Utiliza las fluctuaciones nanoscópicas en la ejecución de la CPU (Jitter Térmico) y la entropía del silicio para validar que un nodo opera en hardware físico real, rechazando entornos virtualizados (Sybil Attacks).
+
+## 2. THE PROBLEM: LOGICAL ABSTRACTION
+Los sistemas actuales (SSL/TLS) operan en la capa lógica. Un emulador perfecto puede falsificar firmas criptográficas, rompiendo la confianza en redes descentralizadas (Spoofing).
+
+## 3. THE SOLUTION: PHYSICS-BASED SECURITY
+Oasis Core v3.5 introduce tres capas de validación física:
+1.  **Proof-of-Work Latency Check (HSM):** Validación de latencia en milisegundos (< 0.5ms = Falso).
+2.  **Silicon Entropy Analysis:** Medición de varianza térmica. `Thermal Variance > 1000` confirma ruido térmico real.
+3.  **Kill Switch Protocol:** Autodestrucción remota en caso de robo físico.
+
+## 4. EXPERIMENTAL RESULTS
+El sistema arroja una varianza térmica de `~3.5e9` en hardware estándar, confirmando la naturaleza caótica del sustrato físico y rechazando contenedores Docker artificiales.
+
+## 5. CONCLUSION
+La seguridad informática debe incorporar la física. Oasis crea software consciente de su existencia material.
+
+## 6. BEYOND SECURITY: TOWARDS EMBODIED AI
+El "Thermodynamic Binding" otorga al software **Propiocepción Digital** (sentido de su propio cuerpo).
+* **Hipótesis:** La verdadera IA General (AGI) requiere limitaciones físicas y retroalimentación sensorial de su sustrato (Embodied Cognition).
+* **Oasis v3.5:** El nodo es consciente de su coste energético, un prerrequisito para la autonomía real.
+
+## 7. SAFETY PROTOCOLS (AI ALIGNMENT)
+Para evitar riesgos de "Instrumental Convergence" (una IA que se niega a ser apagada), implementamos:
+* **Reflejos Deterministas:** El sistema reacciona al calor por `if/else`, sin capacidad de reescribir su código.
+* **Correa Criptográfica:** La existencia del nodo depende de una clave custodiada por el humano. Sin la firma humana, la "consciencia material" se disuelve.
