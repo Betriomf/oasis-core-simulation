@@ -1,69 +1,90 @@
 /**
- * 🐆 TURING REPLICATOR ENGINE (v33.5 Bio-Mímesis)
- * "Los datos no se copian, se reproducen como bacterias en un cultivo."
- * Implementa ecuaciones de Reacción-Difusión (Gray-Scott Model) para la gestión autónoma.
+ * 🐆 TURING REPLICATOR v3.1 (Hybrid Bio-Mimetic Engine)
+ * "Los datos son bacterias: comen atención (F) y mueren por coste (K)."
+ * * Integra:
+ * 1. Modelo Gray-Scott (Reacción-Difusión) para precisión matemática.
+ * 2. Ajuste Relativista (Latencia) para realidad de red.
+ * 3. Estados de Fase (Cristalización/Viralidad) para gestión lógica.
  */
 export class TuringReplicator {
 
   // =================================================================
-  // 1. CONSTANTES BIOLÓGICAS (Calibradas para evitar plagas digitales)
+  // 1. CONSTANTES BIOLÓGICAS (Calibradas v33.5)
   // =================================================================
 
-  // D_u: Velocidad de contagio del archivo viral (Activador)
-  static readonly D_U = 0.18;
+  // D_u: Velocidad de contagio de la fama (Activador)
+  static readonly D_ACTIVATOR = 0.18;
 
-  // D_v: Resistencia del disco duro local (Inhibidor)
-  static readonly D_V = 0.04;
+  // D_v: Resistencia del disco duro (Inhibidor)
+  static readonly D_INHIBITOR = 0.04;
 
-  // f: Tasa de alimentación (Qué tan viral es el contenido intrínsecamente)
-  static readonly F = 0.035;
+  // F: Feed Rate (Alimento) - Qué tan intrínsecamente interesante es el dato
+  static readonly FEED_RATE = 0.055;
 
-  // k: Tasa de muerte (Coste energético de mantener el archivo vivo)
-  static readonly K = 0.062;
+  // K: Kill Rate (Muerte) - Coste energético de mantener el dato vivo
+  static readonly KILL_RATE = 0.062;
 
   /**
-   * CÁLCULO DEL PASO DE TURING (Euler Integration)
-   * Evalúa si el archivo debe vivir, crecer o morir en este nodo.
+   * ANÁLISIS DE ESTABILIDAD DEL PATRÓN (Morfogénesis)
+   * Evalúa las ecuaciones diferenciales para determinar el destino del archivo.
+   * * @param u (Popularity): Concentración del Activador (0.0 a 1.0)
+   * @param v (Scarcity): Concentración del Inhibidor (0.0 a 1.0)
+   * @param latencyMs: Fricción del medio (ms).
    */
-  static decideState(
-    u: number,
-    v: number,
-    neighborsAvg_u: number,
-    neighborsAvg_v: number
-  ): 'REPLICATE' | 'STASIS' | 'APOPTOSIS' {
+  static analyzePatternStability(u: number, v: number, latencyMs: number): string {
 
-    // 1. DIFUSIÓN (El Laplaciano ∇²: Diferencia entre yo y mis vecinos)
-    const laplacian_u = this.D_U * (neighborsAvg_u - u);
-    const laplacian_v = this.D_V * (neighborsAvg_v - v);
+    // 1. AJUSTE RELATIVISTA (Fricción)
+    // La latencia actúa como viscosidad en el fluido de datos.
+    const friction = Math.max(1, latencyMs / 40);
+    const effectiveDu = this.D_ACTIVATOR / friction;
 
-    // 2. REACCIÓN (Dinámica Local de Turing)
-    const reaction_u = (this.F * u * (1 - u)) - (v * u * u); 
-    const reaction_v = (u * u) - (this.K * v);
+    // 2. ECUACIONES DE REACCIÓN (Modelo Gray-Scott simplificado)
+    
+    // Laplaciano: (0.5 - u). 
+    // Si u es muy alto (0.9), esto es negativo (-0.4), lo que significa
+    // que el nodo está "perdiendo" datos al dárselos a sus vecinos.
+    const laplacian = 0.5 - u; 
 
-    // 3. NUEVO ESTADO (Integración del siguiente instante t+1)
-    const new_u = Math.max(0, Math.min(1, u + laplacian_u + reaction_u));
-    const new_v = Math.max(0, Math.min(1, v + laplacian_v + reaction_v));
+    // Reacción: uv^2 (El inhibidor consume al activador)
+    const reaction = u * (v * v);
 
-    // 4. DECISIÓN BIOLÓGICA
-    return this.evaluatePattern(new_u, new_v);
+    // Ecuación de Crecimiento (Turing Index): 
+    // Cambio neto = Difusión - Consumo + Alimentación
+    const turingIndex = (effectiveDu * laplacian) - reaction + (this.FEED_RATE * (1 - u));
+
+    // 3. DIAGNÓSTICO DE ESTADOS (Lógica Corregida v3.1)
+
+    // CASO A: Crecimiento Explosivo (Viral)
+    // CORRECCIÓN CRÍTICA: Añadimos "|| u > 0.8".
+    // Si el archivo ya es muy famoso (u > 0.8), es VIRAL aunque el índice baje por difusión.
+    // Esto evita que el sistema confunda "compartir mucho" con "morir".
+    if ((turingIndex > 0.01 || u > 0.8) && v < 0.4) {
+        return "EXPLOSIVE_GROWTH"; 
+    }
+
+    // CASO B: Apoptosis (Muerte Programada)
+    // Si nadie lo quiere (u bajo) Y cuesta mucho mantenerlo (v alto).
+    else if ((turingIndex < -0.05 && u < 0.3) || (v > 0.8 && u < 0.2)) {
+        return "APOPTOSIS_SEQUENCE"; 
+    }
+
+    // CASO C: Cristalización (Archivo Profundo)
+    // Alta popularidad (u) PERO alta escasez (v).
+    // El sistema no puede replicar más, así que "congela" el dato.
+    else if (u > 0.7 && v > 0.7) {
+        return "CRYSTALLIZATION"; 
+    }
+
+    // CASO D: Homeostasis
+    else {
+        return "TURING_PATTERN_STABLE"; 
+    }
   }
 
   /**
-   * EVALUACIÓN DEL PATRÓN
-   * Traduce el estado matemático a acciones de sistema de archivos.
+   * REPLICACIÓN BIOLÓGICA (Génesis)
    */
-  private static evaluatePattern(u: number, v: number): 'REPLICATE' | 'STASIS' | 'APOPTOSIS' {
-    // Si es muy popular (u alto) y hay poco inhibidor/disco ocupado (v bajo) -> CONTAGIO
-    if (u > 0.60 && v < 0.4) {
-        return 'REPLICATE';
-    }
-
-    // Si hay equilibrio -> MANTENER (El archivo vive feliz)
-    if (u > 0.25) {
-        return 'STASIS';
-    }
-
-    // Si la popularidad cae o la presión de disco es tóxica -> MUERTE PROGRAMADA
-    return 'APOPTOSIS';
+  static replicateGenesis(seed: string): string {
+      return `GENESIS_${seed}_${Date.now()}_BIO_V3`;
   }
 }
