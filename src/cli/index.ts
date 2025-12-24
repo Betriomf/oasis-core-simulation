@@ -8,10 +8,12 @@ import { SymbiosisProtocol } from '../biology/SymbiosisProtocol';
 import { BlackCircleSandbox } from '../blackcircle/BlackCircleSandbox';
 // Importamos el Núcleo Radiactivo Fusionado
 import { RadioactiveCore } from '../biology/RadioactiveCore';
+// Importamos el Puente de Inteligencia (SingularityNET)
+import { SingularityBridge } from '../bridge/SingularityBridge';
 
 /**
  * 🖥️ OASIS CLI v3.8 - "NUCLEAR JUSTICE"
- * Integra: Simbiosis, Diapausa y Justicia Geométrica (Triangulación).
+ * Integra: Simbiosis, Diapausa, Justicia Geométrica y Puente SingularityNET.
  */
 
 let PERSISTENT_MEMORY = HardwareSecurity.loadSecureData() || {
@@ -102,35 +104,42 @@ async function main() {
       }
       break;
 
-    // --- COMANDO DE AUDITORÍA NUCLEAR (Nuevo) ---
+    // --- COMANDO DE AUDITORÍA NUCLEAR ---
     case 'audit':
       console.log("☢️  INICIANDO AUDITORÍA DE RADIACIÓN (TRIANGULACIÓN)...");
       
       // 1. Prueba de Justicia (3 Testigos)
-      const witnessesToxic = [6.0, 5.5, 7.0]; // Dosis letales
+      const witnessesToxic = [6.0, 5.5, 7.0]; 
       const isToxic = RadioactiveCore.confirmToxicity(witnessesToxic);
       console.log(`   > Juicio de Toxicidad (3 testigos): ${isToxic ? 'CULPABLE (BAN)' : 'INOCENTE'}`);
 
-      // 2. Prueba de Estabilidad (Decaimiento Relativista)
-      console.log("\n📐 CÁLCULO DE ESTABILIDAD (Decaimiento):");
-      
-      // Nodo Solitario (Gamma 1.0, Sin Triangulación)
-      // Usamos un valor alto inicial (ej. 10.0 Sv) para ver como baja
+      // 2. Prueba de Estabilidad
       const radSolo = RadioactiveCore.decayRadiation(10.0, 3600, 'GAMER', 1.0, false);
-      
-      // Nodo Triangulado (Gamma 1.0, CON Triangulación = true)
       const radTriad = RadioactiveCore.decayRadiation(10.0, 3600, 'GAMER', 1.0, true);
       
-      console.log(`   > Radiación residual (Solo): ${radSolo.toFixed(4)} Sv`);
-      console.log(`   > Radiación residual (Triangulado): ${radTriad.toFixed(4)} Sv`);
-      console.log(`   > EFECTO: La triangulación retiene mejor la estabilidad.`);
+      console.log(`   > Radiación (Solo): ${radSolo.toFixed(4)} Sv`);
+      console.log(`   > Radiación (Triangulado): ${radTriad.toFixed(4)} Sv`);
       
-      // 3. Prueba Gaussiana (Simulada)
-      console.log("\n📊 JUICIO GAUSSIANO (Contexto Global):");
-      // Nodo con 5.5 Sv (Letal), pero la Red tiene media 5.0 (Todos están mal)
+      // 3. Prueba Gaussiana
       const judgment = RadioactiveCore.shouldBanNode(5.5, 5.0, 1.0); 
-      console.log(`   > Veredicto: ${judgment.banned ? 'BAN' : 'PERDONADO'} (${judgment.reason})`);
+      console.log(`   > Veredicto Global: ${judgment.banned ? 'BAN' : 'PERDONADO'} (${judgment.reason})`);
       break;
+
+    // --- NUEVO: COMANDO DE INTELIGENCIA DISTRIBUIDA (BRIDGE) ---
+    case 'consult':
+        if (!inputParam) {
+            console.log("   > ⚠️  Debes escribir una consulta. Ej: consult 'Analizar datos'");
+            break;
+        }
+        try {
+            console.log("📡 CONECTANDO CON LA COLMENA (SINGULARITYNET)...");
+            // Llamamos al puente
+            const response = await SingularityBridge.contractConsultant("standard-inference", inputParam);
+            console.log(`\n   > 📨 RESPUESTA RECIBIDA:\n   ${response}`);
+        } catch (e: any) {
+            console.error(`   > 🛡️  BLOQUEO DEL GUARDIA: ${e.message}`);
+        }
+        break;
 
     case 'status':
         console.log("📊 INFORME DE SIMBIOSIS:");
@@ -143,7 +152,7 @@ async function main() {
       break;
 
     default:
-      console.log("Comandos: start, store, audit, status, panic");
+      console.log("Comandos: start, store, audit, consult, status, panic");
       break;
   }
 }
