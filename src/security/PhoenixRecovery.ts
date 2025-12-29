@@ -1,53 +1,46 @@
-import * as bip39 from 'bip39';
-import { hdkey } from 'ethereumjs-wallet';
+import { ethers } from 'ethers';
+import { HardwareSecurity } from './HardwareSecurity';
 
 /**
- * 🦅 PHOENIX RECOVERY
- * Gestiona el nacimiento de identidades y la visión del pasado.
+ * 🔥 PHOENIX RECOVERY MODULE (Ethers.js Edition)
+ * Genera identidades soberanas usando criptografía moderna.
  */
 export class PhoenixRecovery {
 
-  /**
-   * 1. GÉNESIS (NUEVA CUENTA)
-   * Crea una identidad fresca para este nuevo hardware.
-   * Devuelve las palabras para que el usuario las guarde.
-   */
-  static async createFreshIdentity(): Promise<{ mnemonic: string, privateKey: string, publicKey: string }> {
-    // Generamos entropía nueva (128 bits)
-    const mnemonic = bip39.generateMnemonic(); 
-    const seed = await bip39.mnemonicToSeed(mnemonic);
-    
-    // Derivación estándar (Ethereum compatible path)
-    const hdwallet = hdkey.fromMasterSeed(seed);
-    const wallet = hdwallet.derivePath("m/44'/60'/0'/0/0").getWallet();
-    
-    return {
-      mnemonic, // ¡GUARDAR ESTO!
-      privateKey: wallet.getPrivateKeyString(),
-      publicKey: wallet.getPublicKeyString()
-    };
-  }
+    /**
+     * Crea una nueva identidad criptográfica desde cero.
+     * Genera: Mnemotecnia (12 palabras), Clave Privada y Dirección.
+     */
+    static async createFreshIdentity(): Promise<any> {
+        console.log("   > 🔥 Generando Identidad Fénix (Curva Elíptica secp256k1)...");
+        
+        // Usamos Ethers v6 para crear una wallet aleatoria con entropía fuerte
+        const wallet = ethers.Wallet.createRandom();
+        
+        const identity = {
+            address: wallet.address,
+            privateKey: wallet.privateKey,
+            mnemonic: wallet.mnemonic?.phrase,
+            publicKey: wallet.publicKey,
+            createdAt: Date.now()
+        };
 
-  /**
-   * 2. IMPORTACIÓN SOLO LECTURA (IMPORT OLD)
-   * Toma las palabras del ordenador viejo y devuelve las claves.
-   * Se usará para firmar la "Bengala de Alerta" al nodo original.
-   */
-  static async importReadOnlyIdentity(userMnemonic: string): Promise<{ privateKey: string, publicKey: string } | null> {
-    
-    // Validar checksum
-    if (!bip39.validateMnemonic(userMnemonic)) {
-        return null;
+        // Guardamos inmediatamente en la Bóveda de Hardware
+        HardwareSecurity.saveSecureData(identity);
+        
+        return identity;
     }
 
-    // Regenerar las claves antiguas
-    const seed = await bip39.mnemonicToSeed(userMnemonic);
-    const hdwallet = hdkey.fromMasterSeed(seed);
-    const wallet = hdwallet.derivePath("m/44'/60'/0'/0/0").getWallet();
-
-    return {
-        privateKey: wallet.getPrivateKeyString(),
-        publicKey: wallet.getPublicKeyString()
-    };
-  }
+    static recoverFromMnemonic(phrase: string): any {
+        try {
+            const wallet = ethers.Wallet.fromPhrase(phrase);
+            return {
+                address: wallet.address,
+                privateKey: wallet.privateKey
+            };
+        } catch (e) {
+            console.error("   > ❌ Error recuperando identidad:", e);
+            return null;
+        }
+    }
 }

@@ -1,4 +1,19 @@
-node_modules/
-dist/
+# --- ESCUDO DE PRIVACIDAD (.gitignore) ---
+
+# 1. IDENTIDAD Y CLAVES (¡CRÍTICO!)
+*.enc
+.oasis-identity
 .env
-oasis_secure_vault.enc
+wallet.json
+private_key.pem
+
+# 2. DEPENDENCIAS (Basura pesada)
+node_modules/
+package-lock.json
+
+# 3. LOGS Y BASURA DEL SISTEMA
+*.log
+.DS_Store
+dist/
+build/
+coverage/
