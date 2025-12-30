@@ -1,0 +1,24 @@
+[2025-12-30T18:29:50.193Z] [USER]: Hola
+[2025-12-30T18:29:51.209Z] [AI-LOCAL]: [CANDLE]: Respuesta rápida y privada para "Hola". (Sin coste).
+
+[2025-12-30T18:30:48.930Z] [USER]: Analiza el mercado
+[2025-12-30T18:30:50.437Z] [AI-NETWORK]: [SINGULARITY-AGI]: He analizado "Analiza el mercado" usando 3 modelos concurrentes. La respuesta sintetizada sugiere una optimización del 98%.
+
+[2025-12-30T18:32:24.922Z] [USER]: Analiza el mercado
+[2025-12-30T18:32:26.431Z] [AI-NETWORK]: [SINGULARITY-AGI]: He analizado "Analiza el mercado" usando 3 modelos concurrentes. La respuesta sintetizada sugiere una optimización del 98%.
+
+[2025-12-30T18:49:04.316Z] [USER]: Mi email es pepe@gmail.com y quiero saber el precio del Bitcoin
+[2025-12-30T18:49:05.335Z] [AI-BIG_TECH]: [GEMINI-PRO]: He procesado tu solicitud anonimizada. Aquí tienes el análisis avanzado...
+
+[2025-12-30T18:55:09.614Z] [USER]: Escribeme un poema sobre Bitcoin
+[2025-12-30T18:55:10.633Z] [AI-DEEPSEEK]: [DEEPSEEK-API]: He procesado tu solicitud anonimizada. Aquí tienes el análisis...
+
+[2025-12-30T19:04:29.952Z] [USER]: Explícame la gravedad
+[2025-12-30T19:04:30.958Z] [AI-LOCAL_QUANTUM]: [OASIS-QUANTUM]: He comprimido el conocimiento en un 'Círculo Negro' de alta densidad. Respuesta generada usando solo 600MB de RAM.
+
+[2025-12-30T19:10:36.341Z] [USER]: Necesito un análisis financiero
+[2025-12-30T19:10:37.348Z] [AI-LOCAL_QUANTUM]: [Oasis-Quantum [Phi-3 Mini 4-bit]]: He comprimido el conocimiento usando física de tensores. 100% Local.
+
+[2025-12-30T19:16:08.575Z] [USER]: Dame un análisis complejo
+[2025-12-30T19:16:10.092Z] [AI-BITTENSOR]: [Bittensor (Opus-Level Decentralized)]: Respuesta de máxima calidad validada por Yuma Consensus.
+

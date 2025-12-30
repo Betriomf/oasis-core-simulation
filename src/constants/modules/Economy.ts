@@ -1,19 +1,17 @@
-/**
- * 🏛️ UNIVERSAL ECONOMIC CONSTANTS
- * La "Constitución" financiera del nodo.
- */
-export class Economy {
-    // 🏦 TESORERÍA DEL PROTOCOLO (Donde llegan los peajes)
-    // En producción, esto sería una Multi-Sig Wallet o un DAO Treasury.
-    // Por ahora, usamos una dirección de marcadora de posición.
-    public static readonly TREASURY_WALLET = "0x_OASIS_TREASURY_VAULT_SECURE_ETH";
+export const Economy = {
+    // ✅ TU TESORERÍA REAL (Donde cobras)
+    TREASURY_WALLET: "0x009299bc092c2c571f4fad5623d82ab804f35755",
 
-    // 📉 REGLA DE RAMSEY (Elasticidad de Precios)
-    // Definimos las tarifas base según el tipo de usuario o estado de la red.
-    public static readonly RAMSEY_FEES: any = {
-        TIER_CONSUMER: 0.005, // 0.5% (Estándar)
-        TIER_ENTERPRISE: 0.002, // 0.2% (Descuento por volumen)
-        TIER_SURGE: 0.05,     // 5.0% (Alta congestión/Emergencia)
-        TIER_HAFNIO: 0.00     // 0.0% (Modo Supervivencia/Hibernación)
-    };
-}
+    // Mantenemos la de Bitcoin solo como referencia (Backup)
+    BITCOIN_RESERVE: "33zJ9jmWYWe6JmHuw8aHoJqKQGFqdz1qVE",
+
+    // Tarifas del Sistema (Regla de Ramsey)
+    RAMSEY_FEES: {
+        TIER_CONSUMER: 0.005,   // 0.5% (Usuario normal)
+        TIER_ENTERPRISE: 0.002, // 0.2% (Usuario que comparte disco)
+        TIER_INSTITUTIONAL: 0.001 // 0.1% (Socios)
+    },
+
+    MAX_TRANSACTION_LIMIT: 1000,
+    MIN_GAS_RESERVE: 0.01 
+};
