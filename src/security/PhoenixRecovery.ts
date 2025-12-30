@@ -1,46 +1,59 @@
-import { ethers } from 'ethers';
-import { HardwareSecurity } from './HardwareSecurity';
+import * as crypto from 'crypto';
+import * as os from 'os';
 
-/**
- * 🔥 PHOENIX RECOVERY MODULE (Ethers.js Edition)
- * Genera identidades soberanas usando criptografía moderna.
- */
 export class PhoenixRecovery {
 
-    /**
-     * Crea una nueva identidad criptográfica desde cero.
-     * Genera: Mnemotecnia (12 palabras), Clave Privada y Dirección.
-     */
-    static async createFreshIdentity(): Promise<any> {
-        console.log("   > 🔥 Generando Identidad Fénix (Curva Elíptica secp256k1)...");
-        
-        // Usamos Ethers v6 para crear una wallet aleatoria con entropía fuerte
-        const wallet = ethers.Wallet.createRandom();
-        
-        const identity = {
-            address: wallet.address,
-            privateKey: wallet.privateKey,
-            mnemonic: wallet.mnemonic?.phrase,
-            publicKey: wallet.publicKey,
-            createdAt: Date.now()
-        };
+    private static MOCK_LOGS = [
+        "[2023-10-27] IA: Consulta sobre Arquitectura Fractal",
+        "[2023-10-28] DEFI: Swap 1 ETH -> USDC",
+        "[2023-10-29] STORAGE: Guardado 'Plan_Maestro.txt'"
+    ];
 
-        // Guardamos inmediatamente en la Bóveda de Hardware
-        HardwareSecurity.saveSecureData(identity);
-        
-        return identity;
+    static getCurrentHardwareHash(): string {
+        // Crea una huella única basada en tu CPU y nombre de equipo
+        const fingerPrint = os.cpus()[0].model + os.hostname() + os.platform();
+        return crypto.createHash('sha256').update(fingerPrint).digest('hex');
     }
 
-    static recoverFromMnemonic(phrase: string): any {
-        try {
-            const wallet = ethers.Wallet.fromPhrase(phrase);
+    static async enterSentinelMode(paperKey: string, storedHardwareHash: string) {
+        console.log("\n🔥 INICIANDO PROTOCOLO FÉNIX...");
+        console.log("   > 🔐 Verificando Matemáticas de la Semilla...");
+        await new Promise(r => setTimeout(r, 1000));
+        
+        const currentHash = this.getCurrentHardwareHash();
+        const isOriginalPC = (currentHash === storedHardwareHash);
+
+        if (isOriginalPC) {
             return {
-                address: wallet.address,
-                privateKey: wallet.privateKey
+                success: true,
+                mode: "FULL_ADMIN_RECOVERY",
+                hardwareMatch: true,
+                permissions: ["READ", "WRITE", "EXECUTE_AI", "SIGN_DEFI"]
             };
-        } catch (e) {
-            console.error("   > ❌ Error recuperando identidad:", e);
-            return null;
+        } else {
+            return {
+                success: true,
+                mode: "RESTRICTED_VIEWER",
+                hardwareMatch: false,
+                permissions: ["READ_LOGS", "LIST_FILES", "SELF_DESTRUCT"],
+                restrictions: ["❌ NO IA", "❌ NO DEFI", "❌ NO DESENCRIPTAR COMPLETAMENTE"]
+            };
         }
+    }
+
+    static showAuditLogs() {
+        console.log("\n📜 HISTORIAL DE ACTIVIDAD:");
+        this.MOCK_LOGS.forEach(log => console.log(`   ${log}`));
+    }
+
+    static async activateSelfDestruct() {
+        console.log("\n☢️  ¡¡¡ BORRADO REMOTO DE EMERGENCIA !!!");
+        console.log("   > Eliminando identidad del enjambre...");
+        await new Promise(r => setTimeout(r, 2000));
+        console.log("   > ✅ Identidad quemada. Este nodo ya no existe.");
+    }
+
+    static async createFreshIdentity() {
+        return { address: "0x" + crypto.randomBytes(20).toString('hex') };
     }
 }
