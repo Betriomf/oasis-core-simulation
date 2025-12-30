@@ -5,19 +5,15 @@ import { DiapauseMechanism, VitalState } from '../biology/DiapauseMechanism';
 import { SymbiosisProtocol } from '../biology/SymbiosisProtocol';
 import { RadioactiveCore } from '../biology/RadioactiveCore';
 import { SingularityBridge } from '../bridge/SingularityBridge';
+import { OasisSapphire } from '../bridge/OasisSapphire';
 import { WalletCore } from '../economy/WalletCore';
 import { P2PNetwork } from '../network/P2PNetwork';
 import { DigitalVacuum } from '../defi/DigitalVacuum'; 
 
-// --- MEMORIA PERSISTENTE ---
 let PERSISTENT_MEMORY = HardwareSecurity.loadSecureData() || {
-    isFirstRun: true,
-    hardwareHash: '',
-    activeIdentity: null,
+    isFirstRun: true, hardwareHash: '', activeIdentity: null,
 };
-
 let CURRENT_VITAL_STATE: VitalState = 'GROWTH';
-
 function saveState() { HardwareSecurity.saveSecureData(PERSISTENT_MEMORY); }
 
 async function ensureIdentity() {
@@ -34,10 +30,7 @@ async function ensureIdentity() {
 
 async function updateVitalSigns() {
     const symbiosisStatus = await SymbiosisProtocol.maintainHomeostasis();
-    if (symbiosisStatus === 'HIBERNATING') {
-        CURRENT_VITAL_STATE = 'HIBERNATION';
-        return;
-    }
+    if (symbiosisStatus === 'HIBERNATING') { CURRENT_VITAL_STATE = 'HIBERNATION'; return; }
     const telemetry = DiapauseMechanism.getSimulatedTelemetry();
     CURRENT_VITAL_STATE = DiapauseMechanism.checkMetabolism(telemetry.diskUsage, telemetry.battery, telemetry.legalRisk);
 }
@@ -50,7 +43,7 @@ async function main() {
   await updateVitalSigns();
 
   console.log(`
-  ░▒▓ OASIS CORE v5.2 - "QUANTUM DEFI" ▓▒░
+  ░▒▓ OASIS CORE v5.3 - "SAPPHIRE STEALTH" ▓▒░
   -------------------------------------------
   Estado: ${CURRENT_VITAL_STATE}
   -------------------------------------------
@@ -58,18 +51,13 @@ async function main() {
 
   switch (command) {
     case 'swarm':
-        await ensureIdentity(); 
-        WalletCore.initializeWallet();
-        console.log("🐝 CONECTANDO AL MULTIVERSO (Red P2P)...");
-        try {
-            await P2PNetwork.startSwarm();
-            setInterval(() => {}, 10000); 
+        await ensureIdentity(); WalletCore.initializeWallet();
+        try { await P2PNetwork.startSwarm(); setInterval(() => {}, 10000); 
         } catch (e: any) { console.error(`   > ❌ ERROR DE RED: ${e.message}`); }
         break;
 
     case 'wallet':
-        await ensureIdentity();
-        WalletCore.initializeWallet();
+        await ensureIdentity(); WalletCore.initializeWallet();
         const address = WalletCore.getAddress();
         const balance = WalletCore.getBalance();
         console.log("\n💎 OASIS HARDWARE WALLET");
@@ -83,23 +71,18 @@ async function main() {
         break;
 
     case 'defi': 
-        await ensureIdentity();
-        WalletCore.initializeWallet();
-        
-        // --- ⚡ FLASH LOAN AUTOMÁTICO PARA PRUEBAS ---
-        // Inyectamos saldo temporalmente para que la física funcione en este test
+        await ensureIdentity(); WalletCore.initializeWallet();
         console.log("   > ⚡ Solicitando Flash Loan de prueba...");
         WalletCore.receiveMockDeposit(1000); 
-        // ---------------------------------------------
-
         console.log("🦄 CONECTANDO A 1INCH AGGREGATOR...");
         await DigitalVacuum.activatePull("ETH", "USDT");
         break;
-
-    case 'audit':
-      const isToxic = RadioactiveCore.confirmToxicity([6.0, 5.5, 7.0]);
-      console.log(`   > Toxicidad: ${isToxic ? 'CULPABLE' : 'INOCENTE'}`);
-      break;
+    
+    case 'stealth': 
+        await ensureIdentity();
+        console.log("🌑 ACTIVANDO MODO SIGILO (Oasis Protocol)...");
+        await OasisSapphire.executeStealthTransaction();
+        break;
 
     case 'consult':
         if (!inputParam) console.log("   > ⚠️  Falta consulta.");
@@ -107,9 +90,8 @@ async function main() {
         break;
 
     default:
-      console.log("Comandos Disponibles: swarm, wallet, defi, consult, audit");
+      console.log("Comandos: swarm, wallet, defi, stealth, consult");
       break;
   }
 }
-
 main();
