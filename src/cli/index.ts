@@ -1,22 +1,40 @@
 import { HardwareSecurity } from '../security/HardwareSecurity';
-import { IdentityManager } from '../security/IdentityManager';
 import { PhoenixRecovery } from '../security/PhoenixRecovery';
 import { WalletConnectTerminal } from '../wallet/WalletConnectTerminal';
 import { HolographicDisk } from '../storage/HolographicDisk';
 import { DigitalVacuum } from '../defi/DigitalVacuum'; 
 import { OasisSapphire } from '../bridge/OasisSapphire';
 import { Watchtower } from '../security/Watchtower';
-import { SingularityBridge, AIProvider } from '../ai/SingularityBridge';
+import { SingularityBridge } from '../ai/SingularityBridge';
 import { ComputeGrid, TASK_CATALOG, GridEstimator } from '../compute/ComputeGrid';
 import * as readline from 'readline';
 
-// Carga de Memoria Segura
-let PERSISTENT_MEMORY = HardwareSecurity.loadSecureData() || {
-    isFirstRun: true, hardwareHash: '', activeIdentity: null,
-};
-if (!PERSISTENT_MEMORY.hardwareHash) {
-    PERSISTENT_MEMORY.hardwareHash = PhoenixRecovery.getCurrentHardwareHash();
+// --- 🔒 FASE 1: SECURE BOOT (Integración Real) ---
+// El sistema NO arranca si la seguridad física falla.
+console.log("🔒 INICIANDO SECURE BOOT...");
+let PERSISTENT_MEMORY = HardwareSecurity.loadSecureData();
+
+if (!PERSISTENT_MEMORY || !PERSISTENT_MEMORY.hardwareHash) {
+    console.log("⚠️  PRIMER ARRANQUE DETECTADO O MEMORIA CORRUPTA.");
+    console.log("   Vinculando software a este Hardware (AMD/Intel)...");
+    const currentHash = PhoenixRecovery.getCurrentHardwareHash();
+    PERSISTENT_MEMORY = {
+        isFirstRun: false, 
+        hardwareHash: currentHash, 
+        activeIdentity: 'ANONYMOUS_ARCHITECT'
+    };
     HardwareSecurity.saveSecureData(PERSISTENT_MEMORY);
+    console.log(`✅ HARDWARE VINCULADO: ${currentHash.substring(0, 16)}...`);
+} else {
+    // VERIFICACIÓN ACTIVA
+    const currentHash = PhoenixRecovery.getCurrentHardwareHash();
+    if (PERSISTENT_MEMORY.hardwareHash !== currentHash) {
+        console.log("\n🛑 ERROR CRÍTICO DE SEGURIDAD 🛑");
+        console.log("Se ha detectado un cambio de hardware o clonación no autorizada.");
+        console.log("Protocolo Watchtower activado.");
+        process.exit(1); // El programa se niega a funcionar
+    }
+    console.log("✅ INTEGRIDAD DE HARDWARE VERIFICADA.");
 }
 
 const askQuestion = (query: string) => {
@@ -29,9 +47,17 @@ async function main() {
   const command = args[0];
   const inputParam = args.slice(1).join(' ');
 
+  // Si no hay comando, mostramos ayuda
+  if (!command) {
+      console.log("\n🌌 OASIS CORE v6.0 - CLI");
+      console.log("Uso: npx tsx src/cli/index.ts [comando]");
+      console.log("Comandos disponibles: grid, consult, connect, store, panic");
+      return;
+  }
+
   switch (command) {
     case 'grid':
-        console.log("\n   ⚡ OASIS COMPUTE GRID (Decentralized Marketplace)");
+        console.log("\n   ⚡ OASIS COMPUTE GRID (Secured by Hardware)");
         console.log("   ================================================");
         console.log("   1. 📤 ALQUILAR POTENCIA");
         console.log("   2. 📥 OFRECER POTENCIA");
@@ -43,7 +69,6 @@ async function main() {
             break;
         }
 
-        // --- MENÚ DE TAREAS ---
         console.log("\n   SELECCIONA TAREA:");
         console.log("   A. 🧠 IA / Machine Learning");
         console.log("   B. 🎨 Renderizado 3D (Blender/CGI)");
@@ -58,64 +83,44 @@ async function main() {
 
         if (!selectedTask) break;
 
-        // --- ESCANEO DE RED ---
         console.log("\n   📡 ESCANEANDO RED P2P (Discovery Protocol)...");
         await new Promise(r => setTimeout(r, 1200));
         const networkState = await GridEstimator.getLiveNetworkStatus();
-        const loadPercent = (networkState.utilizationPercent * 100).toFixed(0);
         
         console.log(`   -------------------------------------------------`);
         console.log(`   | 🌐 ESTADO DE LA RED OASIS (Live Status)       |`);
         console.log(`   | 👥 Nodos Activos:    ${networkState.activeNodes} Peers Online          |`);
-        console.log(`   | 📊 Saturación:       ${loadPercent}% ${networkState.statusColor}                  |`);
+        console.log(`   | 📊 Saturación:       ${(networkState.utilizationPercent * 100).toFixed(0)}% ${networkState.statusColor}                  |`);
         console.log(`   -------------------------------------------------`);
 
-        // --- CÁLCULO FÍSICO (LA CORRECCIÓN ESTÁ AQUÍ) ---
         console.log("\n   📐 CÁLCULO FÍSICO Y DIMENSIONAMIENTO...");
         const qty = await askQuestion("   > Cantidad (frames/epochs): ");
         
-        // CORRECCIÓN: Usamos calculatePhysicsProjection en lugar de calculateProjection
+        // FÍSICA APLICADA
         const projection = GridEstimator.calculatePhysicsProjection(selectedTask, parseInt(qty)||100, networkState);
-        
         const savings = ((projection.costLegacy - projection.costSwarm) / projection.costLegacy) * 100;
 
-        // --- LA TABLA DEFINITIVA ---
         console.log("\n   📊 COTIZACIÓN (Basada en Energía Local + Entropía):");
         console.log("   ==========================================================================");
-        console.log(`   🚫 Centralized Cloud Avg.  | $${projection.costLegacy.toFixed(2)}  | ❌ REFERENCIA (Ineficiente)`);
+        console.log(`   🚫 Centralized Cloud Avg.  | $${projection.costLegacy.toFixed(2)}  | ❌ REFERENCIA`);
         console.log(`   2. Akash Network (AKT)     | $${projection.costAkash.toFixed(2)}   | 🛡️  Nube Descentralizada`);
         console.log(`   3. Oasis Swarm (USDC)      | $${projection.costSwarm.toFixed(2)}   | 🐝 SOBERANO (-${savings.toFixed(0)}%)`);
-        console.log(`      ↳ Energía (España): ${projection.energyUsed} kWh @ ${projection.localRateUsed} €/kWh`);
-        
-        if (categoryFilter === 'RENDER') {
-            console.log(`   4. Render Network (RNDR)   | $${projection.costRender.toFixed(2)}   | 🎨 Renderizado GPU Distribuido`);
-        }
+        console.log(`      ↳ Energía: ${projection.energyUsed} kWh | Eficiencia: ${projection.thermoEff}`);
         console.log("   ==========================================================================");
 
-        const choice = await askQuestion("\n   > ELIGE PROVEEDOR (2, 3, 4): ");
-        
-        if (['2','3','4'].includes(choice)) {
+        const choice = await askQuestion("\n   > ELIGE PROVEEDOR (2, 3): ");
+        if (['2','3'].includes(choice)) {
             await ComputeGrid.deployWorkload(selectedTask, projection, choice);
-        } else {
-            console.log("   > Operación cancelada.");
         }
         break;
 
-    // --- OTROS COMANDOS ---
     case 'consult':
         const prompt = inputParam || await askQuestion("   > 🧠 Tu pregunta: ");
-        console.log("\n   SELECCIONA IA:");
-        console.log("   1. 🕯️  Candle (Local)");
-        console.log("   2. ⚛️  Oasis Quantum (Local Lite)");
-        console.log("   3. 🌐 ASI Alliance (Crypto)");
-        console.log("   4. 🧠 Bittensor (Premium)");
-        console.log("   5. 🤖 Google/GPT (Airlock)");
-        const aiChoice = await askQuestion("\n   > Elige (1-5): ");
-        let aiProv: any = 'LOCAL_CANDLE';
-        if (aiChoice === '2') aiProv = 'LOCAL_QUANTUM';
-        if (aiChoice === '3') aiProv = 'ASI_ALLIANCE';
-        if (aiChoice === '4') aiProv = 'BITTENSOR';
-        if (aiChoice === '5') aiProv = 'OPENAI';
+        console.log("\n   SELECCIONA IA (Soberana vs Corporativa):");
+        console.log("   1. 🕯️  Candle (Local - Privado)");
+        console.log("   2. 🤖 GPT/Google (Airlock - Público)");
+        const aiChoice = await askQuestion("\n   > Elige (1-2): ");
+        let aiProv: any = aiChoice === '1' ? 'LOCAL_CANDLE' : 'OPENAI';
         await SingularityBridge.processQuery(prompt, aiProv);
         break;
 
@@ -133,7 +138,7 @@ async function main() {
     case 'defi': await DigitalVacuum.activatePull("ETH", "USDT"); break;
     case 'stealth': await OasisSapphire.executeStealthTransaction(); break;
 
-    default: console.log("Comandos: grid, consult, connect, store, retrieve, panic, defi"); break;
+    default: console.log("Comando desconocido."); break;
   }
 }
 main();
