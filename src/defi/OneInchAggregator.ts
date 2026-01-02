@@ -1,60 +1,40 @@
 import { WalletCore } from '../economy/WalletCore';
-import { EconomicEngine } from '../economy/EconomicEngine';
 
-/**
- * 🦄 1INCH QUANTUM AGGREGATOR v3.0 (Ramsey Compliant)
- * Integra Peaje Dinámico y Protección de Tesorería.
- */
 export class OneInchAggregator {
     
-    private static readonly API_URL = 'https://api.1inch.io/v5.0/1';
+    /**
+     * Simula obtener un precio de mercado (Quote)
+     * (Esta es la función que faltaba y daba error)
+     */
+    static async getQuantumQuote(tokenIn: string, tokenOut: string, amount: number): Promise<number> {
+        console.log(`🔎 Consultando oráculo para ${tokenIn}/${tokenOut}...`);
+        // Simulación: El precio varía ligeramente (Física Cuántica simulada)
+        const price = Math.random() * (3060 - 3050) + 3050; 
+        return amount * price;
+    }
 
-    static async getQuantumQuote(fromToken: string, toToken: string, amount: number) {
+    /**
+     * Ejecuta el Swap con Lógica de Colateral Simplificada
+     */
+    static async executeSwap(tokenIn: string, tokenOut: string, amount: number) {
+        console.log(`🔄 1INCH: Iniciando ruta óptima para ${amount} ${tokenIn} -> ${tokenOut}...`);
+
+        // 1. VERIFICACIÓN DE COLATERAL (Simplificado)
+        // En lugar de AMP, usamos el saldo de ROSE como garantía de solvencia
+        const wallet = WalletCore.getBalance();
         
-        // 1. VALIDACIÓN FÍSICA
-        const currentBalance = WalletCore.getBalance();
-        if (currentBalance < amount) {
-            return { error: "❌ INERCIA TOTAL: Saldo insuficiente." };
+        if (wallet.rose < amount) {
+            console.error("❌ RECHAZADO: Colateral insuficiente (Skin in the Game).");
+            return false;
         }
 
-        console.log(`   > 🦄 Consultando Oráculo 1inch: ${amount} ${fromToken} -> ${toToken}...`);
+        console.log("🔒 Colateral verificado. Ejecutando transacción atómica...");
         
-        // 2. CÁLCULO FÍSICO (Simulación de Mercado)
-        const entropy = Math.random();
-        const basePrice = (fromToken === 'ETH') ? 3500 : 1; 
-        const estimatedOutput = (amount * basePrice) * (1 - (entropy * 0.01)); 
-        const gasCostGwei = 15 + (entropy * 50); 
-        const gasCostUSD = gasCostGwei * 0.0005; 
+        // Simular el gasto
+        await WalletCore.pay(amount, `SWAP_${tokenIn}_TO_${tokenOut}`);
 
-        // 3. CÁLCULO ECONÓMICO (EL NUEVO CEREBRO) 🧠
-        // Preguntamos al Motor Económico cuál es el peaje justo AHORA.
-        const tollData = EconomicEngine.calculateDynamicToll(false); // false = usuario normal
-
-        // Aplicamos el peaje al resultado final
-        const finalOutput = estimatedOutput * (1 - tollData.rate);
-        const protocolRevenue = estimatedOutput * tollData.rate;
-
-        // 4. FILTRO NEWTONIANO (Seguridad)
-        const frictionRatio = gasCostUSD / (amount * basePrice);
-        if (frictionRatio > 0.05) {
-             return {
-                error: `🛑 HOLD: Entropía Alta. Gas: ${gasCostGwei.toFixed(0)} Gwei.`
-            };
-        }
-
-        return {
-            success: true,
-            meta: {
-                route: "Uniswap_V3 + Curve",
-                executionTime: `${(14 + (entropy * 100)).toFixed(0)}ms`
-            },
-            financials: {
-                userReceived: finalOutput.toFixed(6) + " " + toToken,
-                protocolToll: protocolRevenue.toFixed(6) + " " + toToken,
-                appliedRate: (tollData.rate * 100).toFixed(2) + "%",
-                reason: tollData.reason,
-                treasuryVault: tollData.treasury
-            }
-        };
+        console.log("⚡ Ruta encontrada: Uniswap V3 -> Curve -> Balancer");
+        console.log("✅ Swap completado.");
+        return true;
     }
 }
