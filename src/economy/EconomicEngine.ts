@@ -1,40 +1,79 @@
-import { Economy } from '../constants/modules/Economy';
+import { PHYSICS } from '../constants/UniversalConstants';
 
-/**
- * 💹 ECONOMIC ENGINE
- * Calcula el "Peaje de Protocolo" basándose en la física del mercado.
- */
+export const Economy = {
+    RAMSEY_FEES: {
+        TIER_CONSUMER: 0.01,
+        TIER_ENTERPRISE: 0.05,
+        TIER_INSTITUTIONAL: 0.10,
+        TIER_SURGE: 0.25
+    }
+};
+
 export class EconomicEngine {
 
     /**
-     * Aplica la Regla de Ramsey inversa:
-     * "A mayor inelasticidad (urgencia), mayor peaje".
+     * Calcula el peaje dinámico para DeFi (OneInch)
+     * Devuelve un OBJETO completo, no solo un número.
      */
-    static calculateDynamicToll(isPremium: boolean) {
-        // 1. MEDIR EL PULSO DEL MERCADO (Simulación)
-        // Generamos un factor de "Pánico/Euforia" aleatorio
-        const marketEntropy = Math.random(); 
+    static calculateDynamicToll(isVip: boolean) {
+        const rate = isVip ? 0 : 0.01; // 1% si no es VIP
+        return {
+            rate: rate,
+            reason: isVip ? "VIP_WAIVER" : "STANDARD_NETWORK_TOLL",
+            treasury: PHYSICS.TREASURY_WALLET_BTC // Bóveda de destino
+        };
+    }
 
-        // 2. DECISIÓN DE TARIFA
-        let appliedRate = 0;
-        let reason = "STANDARD_OPERATING_PROCEDURE";
+    /**
+     * Calcula el precio de transacción (Alineado con simulate_life.ts)
+     * Orden de argumentos corregido:
+     * 1. duration (number)
+     * 2. energyCost (number) <--- Aquí fallaba antes
+     * 3. location (string)
+     * 4. bandwidth (number)
+     * 5. tier (string)
+     * 6. load (number)
+     */
+    static calculateTransactionPrice(
+        durationHours: number,
+        energyCostKwh: number,
+        location: string,
+        bandwidthMbps: number,
+        tier: string,
+        networkLoad: number
+    ) {
+        // 1. Tarifa base
+        let baseFee = Economy.RAMSEY_FEES.TIER_CONSUMER;
+        if (tier === 'ENTERPRISE') baseFee = Economy.RAMSEY_FEES.TIER_ENTERPRISE;
+        if (tier === 'INSTITUTIONAL') baseFee = Economy.RAMSEY_FEES.TIER_INSTITUTIONAL;
 
-        if (marketEntropy > 0.9) {
-            // Si el mercado está loco (90% entropía), subimos el precio (SURGE)
-            appliedRate = Economy.RAMSEY_FEES.TIER_SURGE;
-            reason = "HIGH_MARKET_VOLATILITY_SURGE";
-        } else if (isPremium) {
-            appliedRate = Economy.RAMSEY_FEES.TIER_ENTERPRISE;
-            reason = "ENTERPRISE_AGREEMENT";
-        } else {
-            appliedRate = Economy.RAMSEY_FEES.TIER_CONSUMER;
-            reason = "STANDARD_CONSUMER";
-        }
+        // 2. Surge Pricing
+        const isSurge = networkLoad > 0.90;
+        if (isSurge) baseFee = Economy.RAMSEY_FEES.TIER_SURGE;
+
+        // 3. Cálculo
+        const energyConsumed = (bandwidthMbps / 100) * durationHours;
+        const energyCostTotal = energyConsumed * energyCostKwh;
+        
+        const oasisFee = baseFee * durationHours;
+        const nodeMargin = energyCostTotal * 0.20;
+        
+        const totalUserPays = energyCostTotal + oasisFee + nodeMargin;
+        const nodeNet = totalUserPays - oasisFee - energyCostTotal;
 
         return {
-            rate: appliedRate,
-            reason: reason,
-            treasury: Economy.TREASURY_WALLET
+            price: totalUserPays,
+            metadata: {
+                locationPrice: energyCostKwh,
+                isSurge: isSurge,
+                location: location
+            },
+            financials: {
+                totalUserPays: totalUserPays,
+                nodeNet: nodeNet,
+                oasisRevenue: oasisFee,
+                energyCost: energyCostTotal
+            }
         };
     }
 }

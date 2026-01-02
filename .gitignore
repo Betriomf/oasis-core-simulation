@@ -1,19 +1,13 @@
-# --- ESCUDO DE PRIVACIDAD (.gitignore) ---
-
-# 1. IDENTIDAD Y CLAVES (¡CRÍTICO!)
-*.enc
-.oasis-identity
-.env
-wallet.json
-private_key.pem
-
-# 2. DEPENDENCIAS (Basura pesada)
+# Dependencias
 node_modules/
-package-lock.json
+dist/
 
-# 3. LOGS Y BASURA DEL SISTEMA
+# Variables de entorno y secretos (MUY IMPORTANTE)
+.env
+.env.local
+*.pem
+*.key
+
+# Logs y archivos del sistema
 *.log
 .DS_Store
-dist/
-build/
-coverage/

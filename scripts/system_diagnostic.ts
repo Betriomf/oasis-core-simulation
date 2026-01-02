@@ -1,83 +1,87 @@
-import { Economy } from '../src/constants/modules/Economy';
-import { Physics } from '../src/constants/modules/Physics';
-import { OasisMeshNetwork } from '../src/geometry/OasisMeshNetwork';
-import { NewtonianMechanics } from '../src/physics/NewtonianMechanics';
-import { EconomicEngine } from '../src/economy/EconomicEngine';
+import { exec } from 'child_process';
+import * as os from 'os';
+import * as fs from 'fs';
 
-/**
- * 🏥 OASIS SYSTEM DIAGNOSTIC TOOL
- * Ejecuta una prueba de integridad de todos los órganos vitales del proyecto.
- */
+// COLORES (Estilo Hacker/Matrix)
+const R = "\x1b[31m"; // Rojo (Error)
+const G = "\x1b[32m"; // Verde (Éxito)
+const Y = "\x1b[33m"; // Amarillo (Info)
+const C = "\x1b[36m"; // Cyan (Títulos)
+const RST = "\x1b[0m"; // Reset
 
-async function runDiagnostic() {
-    console.log("🏥 INICIANDO DIAGNÓSTICO DE SISTEMA COMPLETO...\n");
-    let score = 0;
-    let totalChecks = 5;
+console.log(`\n${C}🔮 OASIS CORE v6.0 - MONITOR DE SIGNOS VITALES${RST}`);
+console.log(`${C}================================================${RST}`);
+console.log(`📅 Fecha: ${new Date().toISOString()}`);
+console.log(`💻 Host:  ${os.hostname()} (${os.platform()} ${os.arch()})`);
+console.log(`------------------------------------------------\n`);
 
-    // 1. CHEQUEO DEL ALMA (Constantes)
-    console.log("1. [ALMA] Verificando Constantes Universales...");
-    if (Physics.C_OASIS === 200000 && Economy.RAMSEY_FEES.TIER_ENTERPRISE === 0.20) {
-        console.log("   ✅ Constantes Físicas y Económicas cargadas correctamente.");
-        score++;
+// 1. FUNCIÓN PARA VERIFICAR SI EXISTEN LOS ARCHIVOS (Integridad Estructural)
+const checkFile = (path: string, label: string) => {
+    if (fs.existsSync(path)) {
+        console.log(`[${G}OK${RST}] 📄 ${label}`);
+        return true;
     } else {
-        console.log("   ❌ ERROR: Corrupción en constantes universales.");
+        console.log(`[${R}FAIL${RST}] 📄 ${label} (No encontrado en ${path})`);
+        return false;
     }
+};
 
-    // 2. CHEQUEO DEL SISTEMA NERVIOSO (Phi-CAP)
-    console.log("\n2. [RED] Probando Sincronización Phi-CAP...");
-    const heartbeat = OasisMeshNetwork.getNextHeartbeat(1, 1000);
-    // Verificamos que sea irracional (no entero redondo)
-    if (heartbeat % 100 !== 0) { 
-        console.log(`   ✅ Latido Irracional detectado (${heartbeat}ms). Inmunidad CAP activa.`);
-        score++;
-    } else {
-        console.log("   ❌ ERROR: El latido es demasiado regular. Riesgo de colisión.");
-    }
+// 2. FUNCIÓN PARA EJECUTAR TESTS REALES (Integridad Lógica)
+const runTestCommand = (name: string, command: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+        process.stdout.write(`[${Y}WAIT${RST}] ⚙️  Ejecutando ${name}... `);
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                process.stdout.write(`\r[${R}FAIL${RST}] ⚙️  ${name}        \n`);
+                console.log(`      ↳ Error: ${stderr.split('\n')[0] || error.message}`);
+                resolve(false);
+            } else {
+                process.stdout.write(`\r[${G}OK${RST}] ⚙️  ${name}          \n`);
+                resolve(true);
+            }
+        });
+    });
+};
 
-    // 3. CHEQUEO DEL CEREBRO (Newton)
-    console.log("\n3. [FÍSICA] Simulando Gravedad y Entropía...");
-    const gravity = NewtonianMechanics.calculateGravitationalPull(50, 1000, 10); // Tarea media, nodo fuerte, cerca
-    const price = NewtonianMechanics.calculateForceToMove(100, 1); // 100MB, 1s urgencia
-    if (gravity > 0 && price > 0) {
-        console.log(`   ✅ Motor Newtoniano operativo. (G=${gravity.toFixed(2)}N, F=${price.toFixed(2)}SPN)`);
-        score++;
-    } else {
-        console.log("   ❌ ERROR: Fallo en leyes de movimiento.");
-    }
-
-    // 4. CHEQUEO DEL CORAZÓN ECONÓMICO (Ramsey + Surge)
-    console.log("\n4. [ECONOMÍA] Test de Estrés (Surge Pricing)...");
-    const tx = EconomicEngine.calculateTransactionPrice(500, 1, 0.1, 'MED', 'ENTERPRISE', 0.99); // Red al 99%
-    if (tx.metadata.isSurge === true) {
-        console.log("   ✅ Surge Pricing activado correctamente ante saturación.");
-        score++;
-    } else {
-        console.log("   ❌ ERROR: El sistema no reaccionó a la crisis de red.");
-    }
-
-    // 5. CHEQUEO DE GOBERNANZA (Cuadrática)
-    console.log("\n5. [GOBERNANZA] Simulando Resistencia a Plutocracia...");
-    const whaleMoney = 1000;
-    const quadraticPower = Math.floor(Math.sqrt(whaleMoney));
-    if (quadraticPower < whaleMoney) {
-        console.log(`   ✅ Voto Cuadrático activo. (1000 SPN = ${quadraticPower} Votos). Ballenas neutralizadas.`);
-        score++;
-    } else {
-        console.log("   ❌ ERROR: El sistema es lineal. Riesgo de ataque plutocrático.");
-    }
-
-    // RESULTADO FINAL
-    console.log("\n-------------------------------------------");
-    const health = (score / totalChecks) * 100;
-    console.log(`📊 PUNTUACIÓN DE INTEGRIDAD: ${health}%`);
+async function main() {
+    console.log(`${Y}>>> FASE 1: INTEGRIDAD DE ARCHIVOS (Filesystem)${RST}`);
     
-    if (health === 100) {
-        console.log("✨ SISTEMA NOMINAL. LISTO PARA DESPLIEGUE.");
-        console.log("   El proyecto está Vivo, Libre y Seguro.");
-    } else {
-        console.log("⚠️ ATENCIÓN: Se detectaron fallos críticos.");
+    // Lista de módulos vitales que hemos creado hoy
+    const criticalFiles = [
+        ['src/compute/ComputeGrid.ts', 'Motor de Cómputo (Grid)'],
+        ['src/cli/index.ts', 'Interfaz de Comando (CLI)'],
+        ['simulation/verify_phi.py', 'Simulación de Tráfico Phi'],
+        ['src/tests/GrandUnifiedTest.ts', 'Test Unificado (Newton/Tesla)'],
+        ['README.md', 'Documentación y Manifiesto']
+    ];
+
+    let filesScore = 0;
+    for (const [path, label] of criticalFiles) {
+        if (checkFile(path, label)) filesScore++;
     }
-    console.log("-------------------------------------------\n");
+
+    console.log(`\n${Y}>>> FASE 2: PRUEBAS DE FUEGO (Live Execution)${RST}`);
+    
+    // Aquí ejecutamos lo que ya sabemos que funciona para confirmarlo
+    const physicsOk = await runTestCommand("Física de Newton & Einstein", "npx tsx src/tests/GrandUnifiedTest.ts");
+    const simulationOk = await runTestCommand("Simulación Python (Phi)", "python3 simulation/verify_phi.py");
+    // Verificamos que TypeScript compile sin errores graves
+    const buildOk = await runTestCommand("Compilación del Núcleo", "npx tsc --noEmit");
+
+    console.log(`\n${C}================================================${RST}`);
+    
+    const totalChecks = criticalFiles.length + 3; // Archivos + 3 Tests
+    const passedChecks = filesScore + (physicsOk?1:0) + (simulationOk?1:0) + (buildOk?1:0);
+
+    if (passedChecks === totalChecks) {
+        console.log(`✅ DIAGNÓSTICO: SISTEMA NOMINAL (${passedChecks}/${totalChecks})`);
+        console.log(`🚀 OASIS CORE v6.0 LISTO PARA DESPLIEGUE.`);
+        process.exit(0);
+    } else {
+        console.log(`⚠️  DIAGNÓSTICO: ATENCIÓN REQUERIDA (${passedChecks}/${totalChecks})`);
+        console.log(`❌ Hay componentes rotos o faltantes.`);
+        process.exit(1);
+    }
 }
 
-runDiagnostic();
+main();
