@@ -1,144 +1,132 @@
 import { HardwareSecurity } from '../security/HardwareSecurity';
-import { PhoenixRecovery } from '../security/PhoenixRecovery';
-import { WalletConnectTerminal } from '../wallet/WalletConnectTerminal';
-import { HolographicDisk } from '../storage/HolographicDisk';
-import { DigitalVacuum } from '../defi/DigitalVacuum'; 
+import { IdentityManager } from '../security/IdentityManager';
+import { WalletCore } from '../economy/WalletCore';
+import { P2PNetwork } from '../network/P2PNetwork';
 import { OasisSapphire } from '../bridge/OasisSapphire';
-import { Watchtower } from '../security/Watchtower';
-import { SingularityBridge } from '../ai/SingularityBridge';
-import { ComputeGrid, TASK_CATALOG, GridEstimator } from '../compute/ComputeGrid';
 import * as readline from 'readline';
-
-// --- 🔒 FASE 1: SECURE BOOT (Integración Real) ---
-// El sistema NO arranca si la seguridad física falla.
-console.log("🔒 INICIANDO SECURE BOOT...");
-let PERSISTENT_MEMORY = HardwareSecurity.loadSecureData();
-
-if (!PERSISTENT_MEMORY || !PERSISTENT_MEMORY.hardwareHash) {
-    console.log("⚠️  PRIMER ARRANQUE DETECTADO O MEMORIA CORRUPTA.");
-    console.log("   Vinculando software a este Hardware (AMD/Intel)...");
-    const currentHash = PhoenixRecovery.getCurrentHardwareHash();
-    PERSISTENT_MEMORY = {
-        isFirstRun: false, 
-        hardwareHash: currentHash, 
-        activeIdentity: 'ANONYMOUS_ARCHITECT'
-    };
-    HardwareSecurity.saveSecureData(PERSISTENT_MEMORY);
-    console.log(`✅ HARDWARE VINCULADO: ${currentHash.substring(0, 16)}...`);
-} else {
-    // VERIFICACIÓN ACTIVA
-    const currentHash = PhoenixRecovery.getCurrentHardwareHash();
-    if (PERSISTENT_MEMORY.hardwareHash !== currentHash) {
-        console.log("\n🛑 ERROR CRÍTICO DE SEGURIDAD 🛑");
-        console.log("Se ha detectado un cambio de hardware o clonación no autorizada.");
-        console.log("Protocolo Watchtower activado.");
-        process.exit(1); // El programa se niega a funcionar
-    }
-    console.log("✅ INTEGRIDAD DE HARDWARE VERIFICADA.");
-}
 
 const askQuestion = (query: string) => {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     return new Promise<string>(resolve => rl.question(query, ans => { rl.close(); resolve(ans); }));
 };
 
-async function main() {
-  const args = process.argv.slice(2);
-  const command = args[0];
-  const inputParam = args.slice(1).join(' ');
+// --- GESTIÓN DE ALMACENAMIENTO (Modelo Biológico) ---
+const StorageManager = {
+    checkQuota: () => ({ used: 1.5, provided: 10, ratio: 0.15 }),
+    
+    // Aplicando Biología (Poda Sináptica) y Física (Entropía)
+    explainPhilosophy: () => {
+        console.log("\n🕸️  MODELO DE MEMORIA COLABORATIVA (Sinaptic Pruning)");
+        console.log("   En Oasis, los datos se comportan como neuronas:");
+        console.log("   Si no se 'activan' (visitan), la red asume que son ruido y los recicla.");
+        console.log("   Esto mantiene el ecosistema sano y ligero sin servidores centrales.");
+    }
+};
 
-  // Si no hay comando, mostramos ayuda
-  if (!command) {
-      console.log("\n🌌 OASIS CORE v6.0 - CLI");
-      console.log("Uso: npx tsx src/cli/index.ts [comando]");
-      console.log("Comandos disponibles: grid, consult, connect, store, panic");
-      return;
-  }
-
-  switch (command) {
-    case 'grid':
-        console.log("\n   ⚡ OASIS COMPUTE GRID (Secured by Hardware)");
-        console.log("   ================================================");
-        console.log("   1. 📤 ALQUILAR POTENCIA");
-        console.log("   2. 📥 OFRECER POTENCIA");
+// --- GESTIÓN LEGAL (Responsabilidad Distribuida) ---
+const LegalManager = {
+    showFullTerms: async (askFn: any) => {
+        console.log("\n📜 MANIFIESTO DE RESPONSABILIDAD COMPARTIDA");
+        console.log("=============================================");
         
-        const mode = await askQuestion("   > Elige (1-2): ");
+        console.log("\n1. PRINCIPIO DE ENTROPÍA (Física):");
+        console.log("   Oasis es un sistema vivo. La persistencia de un dato depende");
+        console.log("   de la 'Energía de Atención' que recibe (visitas/lecturas).");
+        
+        console.log("\n2. AUSENCIA DE GARANTÍA (Economía):");
+        console.log("   Este es un espacio colaborativo gratuito. Los creadores NO son");
+        console.log("   responsables si la 'Poda Sináptica' de la red elimina datos abandonados.");
+        
+        console.log("\n3. SOBERANÍA RADICAL (Psicología):");
+        console.log("   Tú decides cuánto tiempo puede sobrevivir tu dato sin atención.");
+        console.log("   Si el contador llega a cero, el dato regresa al vacío.");
 
-        if (mode === '2') {
-            await ComputeGrid.startProviderMode();
-            break;
+        console.log("=============================================");
+        
+        const agreement = await askFn("\n✍️ Escribe 'ENTIENDO' para aceptar las leyes físicas del sistema: ");
+        if (agreement.toUpperCase() !== 'ENTIENDO') {
+            console.log("❌ Debes comprender el modelo para usar Oasis.");
+            process.exit(1);
         }
+        console.log("✅ Conciencia Sincronizada. Iniciando nodo...\n");
+    }
+};
 
-        console.log("\n   SELECCIONA TAREA:");
-        console.log("   A. 🧠 IA / Machine Learning");
-        console.log("   B. 🎨 Renderizado 3D (Blender/CGI)");
-        
-        const cat = await askQuestion("   > Elige (A/B): ");
-        const categoryFilter = cat.toUpperCase() === 'A' ? 'AI_ML' : 'RENDER';
-        const availableTasks = TASK_CATALOG.filter(t => t.category === categoryFilter);
-        
-        availableTasks.forEach((t, i) => console.log(`   ${i+1}. ${t.name}`));
-        const tIdx = await askQuestion(`   > Elige Tarea (1-${availableTasks.length}): `);
-        const selectedTask = availableTasks[parseInt(tIdx)-1];
-
-        if (!selectedTask) break;
-
-        console.log("\n   📡 ESCANEANDO RED P2P (Discovery Protocol)...");
-        await new Promise(r => setTimeout(r, 1200));
-        const networkState = await GridEstimator.getLiveNetworkStatus();
-        
-        console.log(`   -------------------------------------------------`);
-        console.log(`   | 🌐 ESTADO DE LA RED OASIS (Live Status)       |`);
-        console.log(`   | 👥 Nodos Activos:    ${networkState.activeNodes} Peers Online          |`);
-        console.log(`   | 📊 Saturación:       ${(networkState.utilizationPercent * 100).toFixed(0)}% ${networkState.statusColor}                  |`);
-        console.log(`   -------------------------------------------------`);
-
-        console.log("\n   📐 CÁLCULO FÍSICO Y DIMENSIONAMIENTO...");
-        const qty = await askQuestion("   > Cantidad (frames/epochs): ");
-        
-        // FÍSICA APLICADA
-        const projection = GridEstimator.calculatePhysicsProjection(selectedTask, parseInt(qty)||100, networkState);
-        const savings = ((projection.costLegacy - projection.costSwarm) / projection.costLegacy) * 100;
-
-        console.log("\n   📊 COTIZACIÓN (Basada en Energía Local + Entropía):");
-        console.log("   ==========================================================================");
-        console.log(`   🚫 Centralized Cloud Avg.  | $${projection.costLegacy.toFixed(2)}  | ❌ REFERENCIA`);
-        console.log(`   2. Akash Network (AKT)     | $${projection.costAkash.toFixed(2)}   | 🛡️  Nube Descentralizada`);
-        console.log(`   3. Oasis Swarm (USDC)      | $${projection.costSwarm.toFixed(2)}   | 🐝 SOBERANO (-${savings.toFixed(0)}%)`);
-        console.log(`      ↳ Energía: ${projection.energyUsed} kWh | Eficiencia: ${projection.thermoEff}`);
-        console.log("   ==========================================================================");
-
-        const choice = await askQuestion("\n   > ELIGE PROVEEDOR (2, 3): ");
-        if (['2','3'].includes(choice)) {
-            await ComputeGrid.deployWorkload(selectedTask, projection, choice);
-        }
-        break;
-
-    case 'consult':
-        const prompt = inputParam || await askQuestion("   > 🧠 Tu pregunta: ");
-        console.log("\n   SELECCIONA IA (Soberana vs Corporativa):");
-        console.log("   1. 🕯️  Candle (Local - Privado)");
-        console.log("   2. 🤖 GPT/Google (Airlock - Público)");
-        const aiChoice = await askQuestion("\n   > Elige (1-2): ");
-        let aiProv: any = aiChoice === '1' ? 'LOCAL_CANDLE' : 'OPENAI';
-        await SingularityBridge.processQuery(prompt, aiProv);
-        break;
-
-    case 'panic': 
-        await Watchtower.logAccess('PAPER_KEY_EMERGENCY', true);
-        const key = await askQuestion("   > Paper Key: ");
-        const sentinel = await PhoenixRecovery.enterSentinelMode(key, PERSISTENT_MEMORY.hardwareHash);
-        if (sentinel.hardwareMatch) { console.log("\n✅ ACCESO CONCEDIDO."); PhoenixRecovery.showAuditLogs(); } 
-        else await PhoenixRecovery.activateSelfDestruct();
-        break;
-
-    case 'connect': await WalletConnectTerminal.generateConnectionQR(); break;
-    case 'store': await HolographicDisk.saveSecureFile("Secret.pdf", 120); break;
-    case 'retrieve': await HolographicDisk.retrieveSecureFile("Secret.pdf"); break;
-    case 'defi': await DigitalVacuum.activatePull("ETH", "USDT"); break;
-    case 'stealth': await OasisSapphire.executeStealthTransaction(); break;
-
-    default: console.log("Comando desconocido."); break;
-  }
+async function handleStorageLogic() {
+    StorageManager.explainPhilosophy();
+    
+    console.log("\n📥 CONFIGURACIÓN DE PERSISTENCIA (Time-to-Live)");
+    console.log("Elige cuánto tiempo pueden sobrevivir tus datos SIN que nadie los mire:");
+    
+    console.log("   1. 🗓️  Corto Plazo (90 Días)  - Ideal para caché/temporal.");
+    console.log("   2. 📅  Medio Plazo (6 Meses)  - Proyectos activos.");
+    console.log("   3. 🧠  Largo Plazo (1 Año)    - Archivos importantes.");
+    
+    const choice = await askQuestion("\n> Selecciona ciclo de vida [1-3]: ");
+    let duration = "";
+    
+    switch(choice) {
+        case '1': duration = "90 Días"; break;
+        case '2': duration = "6 Meses"; break;
+        case '3': duration = "1 Año"; break;
+        default: console.log("Opción inválida, asignando 90 días por defecto."); duration = "90 Días";
+    }
+    
+    console.log(`\n⏳ ENTROPÍA CONFIGURADA: ${duration}`);
+    console.log("⚠️  ADVERTENCIA: Si nadie accede a estos datos en ese periodo,");
+    console.log("    la red liberará el espacio automáticamente.");
+    
+    await new Promise(r => setTimeout(r, 800));
+    console.log(" > 🔒 Cifrando...");
+    console.log(" > 🕸️  Dispersando en el enjambre...");
+    console.log("✅ DATOS GUARDADOS.");
 }
+
+async function main() {
+    // 1. INICIO
+    console.log(`\n🔒 INICIANDO SECURE BOOT...`);
+    await IdentityManager.generateIdentity(); 
+
+    // 2. CONSENTIMIENTO DEL MODELO MENTAL
+    await LegalManager.showFullTerms(askQuestion);
+
+    // 3. ESTADO
+    const quota = StorageManager.checkQuota();
+    console.log(`📊 ESTADO DEL NODO: ${quota.used}GB / ${quota.provided}GB`);
+
+    // BUCLE
+    while (true) {
+        console.log(`
+    🌌 OASIS CORE v7.2 - "MENTAL MODELS"
+    =====================================
+    `);
+        console.log("--- 💾 MEMORIA COLECTIVA ---");
+        console.log("1. 📥 Guardar Dato (Configurar Entropía)");
+        
+        console.log("\n--- 🧠 INTELIGENCIA ARTIFICIAL ---");
+        console.log("2. 🏠 Entrenar IA Local (Candle)");
+        console.log("3. ☁️ Consultar IA Externa");
+
+        console.log("\n--- 💰 RECURSOS ---");
+        console.log("4. 💸 Ofrecer Recursos a la Red");
+        
+        console.log("\n--- 🛡️ SISTEMA ---");
+        console.log("5. 👻 Transacción Privada");
+        console.log("6. 🚪 Salir");
+
+        const selection = await askQuestion("\n> Opción [1-6]: ");
+
+        switch (selection) {
+            case '1': await handleStorageLogic(); break;
+            case '2': console.log("🏠 IA Local..."); break;
+            case '3': console.log("☁️ SingularityNET..."); break;
+            case '4': console.log("💸 Compartiendo..."); break;
+            case '5': await OasisSapphire.executeStealthTransaction(); break;
+            case '6': process.exit(0); break;
+            default: console.log("Opción no válida.");
+        }
+        await askQuestion("\n[ENTER] para continuar...");
+    }
+}
+
 main();

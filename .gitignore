@@ -11,3 +11,5 @@ dist/
 # Logs y archivos del sistema
 *.log
 .DS_Store
+node_identity.json
+node_identity.json
