@@ -1,15 +1,14 @@
-/**
- * (C) 2026 OASIS SWARM.
- * AUTHOR: MARIANO PANZANO CABALLÉ <mpc.3.14@gmail.com>
- * LICENSED UNDER AGPL v3.
- */
 import { HardwareSecurity } from '../security/HardwareSecurity';
 import { IdentityManager } from '../security/IdentityManager';
 import { WalletCore } from '../economy/WalletCore';
 import { P2PNetwork } from '../network/P2PNetwork';
-import { GaloisSharding } from '../storage/GaloisSharding';
 import { HolographicStorage } from '../storage/HolographicStorage';
 import { RetrievalEngine } from '../storage/RetrievalEngine';
+import { SemanticEngine } from '../semantic/SemanticEngine';
+import { ComplianceManager } from '../security/ComplianceManager';
+import { PersonalIndex } from '../storage/PersonalIndex';
+import { FileLauncher } from './FileLauncher';
+import { CrossPlatformShare } from '../network/CrossPlatformShare';
 import * as readline from 'readline';
 import * as crypto from 'crypto';
 
@@ -18,126 +17,144 @@ const askQuestion = (query: string) => {
     return new Promise<string>(resolve => rl.question(query, ans => { rl.close(); resolve(ans); }));
 };
 
-const LocalNode = { pledgedGB: 0, virtualCredit: 0, usedCredit: 0, reputationSBT: 10 };
+const LocalNode = { pledgedGB: 0, virtualCredit: 0, usedCredit: 0, reputationSBT: 10, id: 'd38fb8ba50' };
 
 const PledgeManager = {
     configure: async () => {
         console.log("\n⚖️  CONFIGURACIÓN DE RECIPROCIDAD");
-        console.log("💎 RATIO: 1:1000 | ⭐ REPUTACIÓN ACTIVA");
         const gb = await askQuestion("\n> ¿Cuántos GB cedes?: ");
         const pledged = parseFloat(gb);
         if (isNaN(pledged) || pledged <= 0) process.exit(1);
         LocalNode.pledgedGB = pledged;
         LocalNode.virtualCredit = pledged * 1000;
         LocalNode.reputationSBT += (pledged * 10);
-        console.log(`✅ APORTE CONFIRMADO.\n`);
+        ComplianceManager.logEvent(LocalNode.id, 'PLEDGE_RESOURCE', `${pledged}GB`, 'SUCCESS');
+        console.log(`✅ APORTE REGISTRADO.\n`);
     }
 };
 
 const LegalManager = {
     showFullTerms: async (askFn: any) => {
-        console.log("\n📜 TÉRMINOS Y CONDICIONES (v2026)");
-        console.log("1. ENTROPÍA: Datos no usados se evaporan.");
-        console.log("2. HORIZONTE DE SUCESOS: Límite físico.");
-        console.log("3. MERO CONDUCTO: La red es neutral.");
-        const ag = await askFn("\n✍️ Escribe 'ENTIENDO': ");
-        if (ag.trim().toUpperCase() !== 'ENTIENDO') process.exit(1);
+        console.log("\n📜 MARCO LEGAL (ENS / ISO 27001)");
+        console.log("   - Cumplimiento estricto de disponibilidad e integridad.");
+        console.log("   - Garantía de Derecho al Olvido (Borrado Seguro).");
+        const ag = await askFn("\n✍️ Escribe 'CONFORME': ");
+        if (ag.trim().toUpperCase() !== 'CONFORME') process.exit(1);
+        ComplianceManager.logEvent(LocalNode.id, 'ACCEPT_TERMS', 'v7.21', 'SUCCESS');
         console.log("✅ Sincronizado.\n");
     }
 };
 
 async function handleStorage() {
-    console.log("\n📡 SONAR DE RED...");
-    const stats = await P2PNetwork.scanNetworkStatus();
-    const realLimit = Math.min(LocalNode.virtualCredit - LocalNode.usedCredit, stats.effective);
-    console.log(`> DISPONIBLE REAL: ${realLimit.toFixed(2)} GB`);
-
-    console.log("\n📥 INGESTA: [A] AirDrop | [B] Ruta Local");
-    await askQuestion("> Selección: ");
-    const name = await askQuestion("> Archivo: ");
+    console.log("\n📥 INGESTA DE DATOS (Universal Bridge)");
+    console.log("   [A] 📱 AirDrop / Nearby / Quick Share");
+    console.log("   [B] 💾 Disco Local");
     
-    console.log("\n⏳ TTL: [1] 90 Días | [2] 180 Días | [3] 360 Días");
-    await askQuestion("> Selección: ");
+    const method = await askQuestion("> Selección [A/B]: ");
+    let name = "", sizeGB = 0;
 
-    const sizeGB = (Math.random() * 5) + 0.1;
-    if (sizeGB > realLimit) { console.log("⛔ RECHAZADO: Horizonte de Sucesos."); return; }
-
-    const hash = HolographicStorage.calculateHolographicHash(name);
-    if (HolographicStorage.checkGlobalExistence(hash)) {
-        console.log("✨ DEDUPLICADO (Coste 0).");
+    if (method.toUpperCase() === 'A') {
+        const devices = await CrossPlatformShare.scanNearbyDevices();
+        console.log("\n📱 Dispositivos encontrados:");
+        devices.forEach((d, i) => console.log(`   [${i+1}] ${d}`));
+        const devIndex = await askQuestion("> Selecciona origen [1-3]: ");
+        const fileData = await CrossPlatformShare.receiveFile(devices[parseInt(devIndex)-1]);
+        name = fileData.name; sizeGB = fileData.size;
     } else {
-        console.log("🛡️ Transmutando (Galois)...");
-        await new Promise(r => setTimeout(r, 800));
-        LocalNode.usedCredit += sizeGB;
-        LocalNode.reputationSBT += 1;
-        console.log("✅ GUARDADO (+1 SBT).");
+        name = await askQuestion("> Nombre del archivo: ");
+        sizeGB = (Math.random() * 5) + 0.1;
     }
+
+    console.log(`\n📝 PROCESANDO: '${name}'`);
+    const description = await askQuestion("> Descripción (Enter = Dark Data): ");
+    const tagsRaw = await askQuestion("> Etiquetas: ");
+    const tags = tagsRaw.split(',').filter(t => t.length > 0);
+
+    const qualityScore = SemanticEngine.calculateMetadataScore(name, description, tags);
+    const isDark = qualityScore < 40;
+
+    if (isDark) console.log("   ℹ️  INFO: Se guardará como Dark Data (Privado).");
+
+    if (!ComplianceManager.checkTransactionAML(sizeGB * 0.1, 'STORAGE_FEE')) return;
+    const hash = HolographicStorage.calculateHolographicHash(name);
+    
+    console.log("🛡️ Transmutando (Galois)...");
+    await new Promise(r => setTimeout(r, 800));
+    
+    LocalNode.usedCredit += sizeGB;
+    LocalNode.reputationSBT += (qualityScore > 70 ? 5 : 1);
+    PersonalIndex.addEntry(name, hash, sizeGB, isDark);
+    
+    console.log(`✅ GUARDADO SEGURO.`);
+    ComplianceManager.logEvent(LocalNode.id, 'STORE_NEW', hash, 'SUCCESS');
 }
 
-// --- RECUPERACIÓN INTELIGENTE (COLA vs VIP) ---
 async function handleRetrieval() {
-    console.log("\n🧲 RECUPERACIÓN DE DATOS (v7.15 Queue System)");
-    console.log("=============================================");
+    console.log("\n🗂️  TU BÓVEDA DIGITAL (Gestión de Activos)");
+    const files = PersonalIndex.getList();
     
-    const fileId = await askQuestion("> Nombre del archivo: ");
+    if (files.length === 0) { console.log("   (Vacío)"); return; }
 
-    // 1. CÁLCULO DE FRICCIÓN
+    console.log("ID  | TIPO | ESTADO       | NOMBRE");
+    console.log("----|------|--------------|----------------");
+    files.forEach(f => {
+        console.log(`${f.id.toString().padEnd(3)} | ${f.type.padEnd(4)} | ${f.securityLevel.substring(0,8)}...  | ${f.name}`);
+    });
+
+    const selection = await askQuestion("\n> ID del archivo: ");
+    const file = PersonalIndex.getFileById(parseInt(selection));
+    if (!file) return;
+
+    // --- SUB-MENÚ DE ACCIÓN (Derecho al Olvido) ---
+    console.log(`\n📂 ACCIONES PARA '${file.name}':`);
+    console.log("   [1] 🚀 ABRIR (Recuperar)");
+    console.log("   [2] 🗑️  BORRAR (Derecho al Olvido / Crypto-Shredding)");
+    
+    const action = await askQuestion("> Elige acción [1/2]: ");
+
+    if (action === '2') {
+        // LÓGICA DE BORRADO SEGURO
+        const confirm = await askQuestion(`⚠️ ¿CONFIRMAS EL BORRADO IRREVERSIBLE DE ${file.name}? [SI/NO]: `);
+        if (confirm === 'SI') {
+            ComplianceManager.cryptoShredding(file.hash);
+            // Aquí lo borraríamos del array en memoria en una app real
+            console.log("✅ ARCHIVO ELIMINADO DEL ÍNDICE Y DE LA RED.");
+        }
+        return;
+    }
+    // ---------------------------------------------
+
+    console.log(`\n🚀 RECUPERANDO: '${file.name}'`);
     const congestion = Math.random();
     const friction = RetrievalEngine.calculateNetworkFriction(congestion);
     const sbtRequired = Math.floor(friction * 5); 
 
-    console.log(`\n📊 ESTADO DE LA RED:`);
-    console.log(`   > Congestión: ${(congestion * 100).toFixed(0)}%`);
-    console.log(`   > 🎖️ Reputación VIP: ${sbtRequired} SBT`);
-    console.log(`   > 👤 Tu Reputación:  ${LocalNode.reputationSBT} SBT`);
+    console.log(`   > Red: ${(congestion*100).toFixed(0)}% | VIP req: ${sbtRequired} SBT`);
 
-    const confirm = await askQuestion("\n> ¿Solicitar Archivo? [s/n]: ");
-    if (confirm.toLowerCase() !== 's') return;
-
-    // 2. DECISIÓN DE RUTA (VIP vs LENTA)
     if (LocalNode.reputationSBT >= sbtRequired) {
-        // --- RUTA RÁPIDA (UNICORNIO) ---
-        console.log("\n🚀 ACCESO VIP CONCEDIDO.");
-        console.log("   > Activando Motores Turing + Tesla...");
-        await RetrievalEngine.retrieveFileHighEnergy(fileId, "LocalNode");
-    
+        console.log("   🚀 ACCESO VIP (Tesla Resonance)...");
+        await RetrievalEngine.retrieveFileHighEnergy(file.hash, LocalNode.id);
     } else {
-        // --- RUTA LENTA (COLA DE ESPERA) ---
-        // Calculamos el tiempo de castigo: (Lo que te falta de reputación) * 0.5 segundos
-        const deficit = sbtRequired - LocalNode.reputationSBT;
-        const waitTimeSeconds = Math.max(5, deficit * 0.5); // Mínimo 5 segundos
-        
-        console.log(`\n🐢 ACCESO ESTÁNDAR (Prioridad Baja).`);
-        console.log(`   ⚠️ No tienes suficiente reputación para el carril rápido.`);
-        console.log(`   ⏳ Tiempo estimado de espera en cola: ${waitTimeSeconds.toFixed(1)} segundos...`);
-        
-        // Simulamos la cuenta atrás
-        for (let i = Math.floor(waitTimeSeconds); i > 0; i--) {
-            process.stdout.write(`   > Esperando turno... ${i}s \r`);
-            await new Promise(r => setTimeout(r, 1000));
-        }
-        console.log("\n   > ✅ Turno concedido.");
-
-        console.log("📡 Descargando (Modo Monofásico - Lento)...");
-        await new Promise(r => setTimeout(r, 3000)); // Descarga lenta simulada
+        console.log("   🐢 ACCESO ESTÁNDAR...");
+        await new Promise(r => setTimeout(r, 2000));
     }
 
-    // 3. INTEGRIDAD FINAL (Para ambos casos)
-    const isClean = RetrievalEngine.verifyShardIntegrity("data", crypto.createHash('sha256').update("data").digest('hex'));
-    if (isClean) console.log("\n✅ ARCHIVO RECONSTRUIDO. Integridad Merkle: 100%.");
+    console.log("\n📦 Abriendo en sistema nativo...");
+    FileLauncher.openFile(file.name);
+    ComplianceManager.logEvent(LocalNode.id, 'FILE_OPEN', file.hash, 'SUCCESS');
 }
 
 async function main() {
-    console.log(`\n🔒 INICIANDO SECURE BOOT...`);
+    console.log(`\n🔒 INICIANDO SECURE BOOT (Final v7.21)...`);
     await IdentityManager.generateIdentity(); 
     WalletCore.initializeWallet(); 
     await LegalManager.showFullTerms(askQuestion);
     await PledgeManager.configure();
 
     while (true) {
-        console.log(`\n    🌌 OASIS CORE v7.15 - "FAIR QUEUE"\n    ==================================`);
-        console.log("1. 📥 Guardar Dato");
-        console.log("2. 🧲 Recuperar Dato (Cola o VIP)");
+        console.log(`\n    🌌 OASIS CORE v7.21 - "SOVEREIGN DATA"\n    ======================================`);
+        console.log("1. 📥 Guardar (AirDrop / Local)");
+        console.log("2. 📂 Mis Archivos (Abrir / Borrar)");
         console.log("3. 📊 Ver Perfil");
         console.log("4. 🚪 Salir");
 

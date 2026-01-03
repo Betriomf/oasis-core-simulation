@@ -2,52 +2,57 @@ import * as crypto from 'crypto';
 import { TuringReplicator } from '../biology/TuringReplicator';
 import { GluonField } from '../physics/GluonField';
 import { TeslaResonance } from '../network/TeslaResonance';
+import { ComplianceManager } from '../security/ComplianceManager';
 
 /**
- * 🧲 RETRIEVAL ENGINE v2.0 (UNICORN EDITION)
- * Orquesta Biología, Física e Ingeniería para la recuperación instantánea.
+ * 🧲 RETRIEVAL ENGINE v3.0 (UNIFIED: PHYSICS + COMPLIANCE)
+ * Combina la velocidad de la luz con la auditoría legal.
  */
 export class RetrievalEngine {
 
-    /**
-     * RECUPERACIÓN RELATIVISTA ACELERADA
-     */
     static async retrieveFileHighEnergy(fileId: string, userNodeId: string): Promise<boolean> {
         console.log(`\n🚀 INICIANDO RECUPERACIÓN DE ALTA ENERGÍA: ${fileId}`);
+        
+        // 1. AUDITORÍA PREVIA (Normativa ENS)
+        ComplianceManager.logEvent(userNodeId, 'RETRIEVAL_START', fileId, 'SUCCESS');
 
-        // 1. BIOLOGÍA (Turing)
-        // ¿El archivo ya "sabía" que lo ibas a pedir?
+        // 2. BIOLOGÍA (Turing) - Predicción
         const nearbyNodes = await TuringReplicator.findNearbyReplicas(fileId, userNodeId);
 
-        // 2. FÍSICA (Gluones/QCD)
-        // Si los nodos están lejos, acercamos los datos a la fuerza.
+        // 3. FÍSICA (Gluones/QCD) - Acercamiento
         const optimalNodes = await GluonField.enforceConfinement(nearbyNodes, userNodeId);
 
-        // 3. INGENIERÍA (Tesla Trifásico)
-        // Usamos los nodos optimizados para abrir el flujo.
+        // 4. INGENIERÍA (Tesla Trifásico) - Velocidad
         if (optimalNodes.length > 0) {
-            // Calculamos el tamaño simulado para la resonancia
             const sizeMB = (Math.random() * 200) + 50; 
-            
-            // Inyectamos los nodos optimizados en el motor Tesla
             console.log(`   > ⚡ Activando Flujo Trifásico sobre ${optimalNodes.length} nodos óptimos...`);
-            return await TeslaResonance.downloadPhased(fileId, sizeMB);
+            
+            const success = await TeslaResonance.downloadPhased(fileId, sizeMB);
+            
+            if (success) {
+                ComplianceManager.logEvent(userNodeId, 'RETRIEVAL_COMPLETE', fileId, 'SUCCESS');
+                return true;
+            }
         }
         
+        ComplianceManager.logEvent(userNodeId, 'RETRIEVAL_FAIL', fileId, 'DENIED');
         return false;
     }
-
-    // --- MÉTODOS AUXILIARES (CRDT & INTEGRIDAD) ---
 
     static async resolveTimeline(localVersion: number, networkVersion: number): Promise<string> {
         if (networkVersion > localVersion) return "UPDATE_AVAILABLE";
         if (networkVersion === localVersion) return "SYNCED";
-        return "MERGE_REQUIRED"; // CRDT Merge needed
+        return "MERGE_REQUIRED";
     }
 
     static verifyShardIntegrity(shardData: string, expectedHash: string): boolean {
         const actualHash = crypto.createHash('sha256').update(shardData).digest('hex');
-        return actualHash === expectedHash;
+        const isValid = actualHash === expectedHash;
+        
+        if (!isValid) {
+            ComplianceManager.logEvent('SYSTEM', 'INTEGRITY_CHECK', 'SHARD_FAIL', 'DENIED');
+        }
+        return isValid;
     }
     
     static calculateNetworkFriction(congestion: number): number {
