@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react"
-// import "./style.css" // Comentamos esto hasta que configuremos Tailwind
+import { useState } from "react"
 
 export default function OasisHUD() {
   const [reputation, setReputation] = useState(110)
