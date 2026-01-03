@@ -1,7 +1,3 @@
-/**
- * (C) 2026 OASIS SWARM CORE.
- * SOVEREIGN NETWORK ARCHITECTURE.
- */
 import { HardwareSecurity } from '../security/HardwareSecurity';
 import { IdentityManager } from '../security/IdentityManager';
 import { WalletCore } from '../economy/WalletCore';
@@ -9,7 +5,6 @@ import { P2PNetwork } from '../network/P2PNetwork';
 import { GaloisSharding } from '../storage/GaloisSharding';
 import { HolographicStorage } from '../storage/HolographicStorage';
 import { RetrievalEngine } from '../storage/RetrievalEngine';
-import { TeslaResonance } from '../network/TeslaResonance'; // <--- NUEVO IMPORT
 import * as readline from 'readline';
 import * as crypto from 'crypto';
 
@@ -18,9 +13,7 @@ const askQuestion = (query: string) => {
     return new Promise<string>(resolve => rl.question(query, ans => { rl.close(); resolve(ans); }));
 };
 
-const LocalNode = {
-    pledgedGB: 0, virtualCredit: 0, usedCredit: 0, reputationSBT: 10
-};
+const LocalNode = { pledgedGB: 0, virtualCredit: 0, usedCredit: 0, reputationSBT: 10 };
 
 const PledgeManager = {
     configure: async () => {
@@ -58,8 +51,7 @@ async function handleStorage() {
     await askQuestion("> Selección: ");
     const name = await askQuestion("> Archivo: ");
     
-    console.log("\n⏳ CICLO DE VIDA (TTL)");
-    console.log("   [1] 90 Días | [2] 180 Días | [3] 360 Días");
+    console.log("\n⏳ TTL: [1] 90 Días | [2] 180 Días | [3] 360 Días");
     await askQuestion("> Selección: ");
 
     const sizeGB = (Math.random() * 5) + 0.1;
@@ -77,64 +69,57 @@ async function handleStorage() {
     }
 }
 
-// --- RECUPERACIÓN ACELERADA (TESLA + BIOLÓGICA) ---
+// --- RECUPERACIÓN INTELIGENTE (COLA vs VIP) ---
 async function handleRetrieval() {
-    console.log("\n🧲 MÓDULO DE RECUPERACIÓN (Velocidad v7.13)");
-    console.log("============================================");
+    console.log("\n🧲 RECUPERACIÓN DE DATOS (v7.15 Queue System)");
+    console.log("=============================================");
     
     const fileId = await askQuestion("> Nombre del archivo: ");
-    
-    // 1. BIOLOGICAL CHECK (Temperatura)
-    console.log("   > 🌡️ Midiendo temperatura viral del archivo...");
-    const temp = P2PNetwork.getFileTemperature(fileId);
-    let speedMultiplier = 1;
 
-    if (temp === "HOT") {
-        console.log("   🔥 ESTADO: HOT (Viral).");
-        console.log("   ✅ Replicación Biológica activada: El archivo está en tu Nodo Vecino.");
-        speedMultiplier = 10; // 10x Velocidad
-    } else if (temp === "WARM") {
-        console.log("   ☁️ ESTADO: WARM (Regional).");
-        speedMultiplier = 5;
-    } else {
-        console.log("   ❄️ ESTADO: COLD (Deep Storage).");
-        console.log("   ⚠️ Requiere búsqueda profunda.");
-        speedMultiplier = 1;
-    }
-
-    // 2. CÁLCULO DE PRIORIDAD (SBT)
+    // 1. CÁLCULO DE FRICCIÓN
     const congestion = Math.random();
     const friction = RetrievalEngine.calculateNetworkFriction(congestion);
-    const sbtRequired = Math.floor(friction * 5 / speedMultiplier); // Si es HOT, pide menos SBT
+    const sbtRequired = Math.floor(friction * 5); 
 
     console.log(`\n📊 ESTADO DE LA RED:`);
     console.log(`   > Congestión: ${(congestion * 100).toFixed(0)}%`);
-    console.log(`   > 🎖️ Reputación Requerida: ${sbtRequired} SBT`);
-    console.log(`   > 👤 Tu Reputación: ${LocalNode.reputationSBT} SBT`);
+    console.log(`   > 🎖️ Reputación VIP: ${sbtRequired} SBT`);
+    console.log(`   > 👤 Tu Reputación:  ${LocalNode.reputationSBT} SBT`);
 
-    if (LocalNode.reputationSBT < sbtRequired) {
-        console.log("\n🐢 PRIORIDAD BAJA. Tu reputación no vence la fricción actual.");
-        return;
-    }
-
-    const confirm = await askQuestion("\n> ¿Iniciar Descarga? [s/n]: ");
+    const confirm = await askQuestion("\n> ¿Solicitar Archivo? [s/n]: ");
     if (confirm.toLowerCase() !== 's') return;
 
-    // 3. DESCARGA TRIFÁSICA (TESLA RESONANCE)
-    // Aquí invocamos el nuevo motor
-    const sizeMB = (Math.random() * 500) + 100;
-    console.log(`\n📡 Sintonizando enjambre para ${sizeMB.toFixed(0)} MB...`);
+    // 2. DECISIÓN DE RUTA (VIP vs LENTA)
+    if (LocalNode.reputationSBT >= sbtRequired) {
+        // --- RUTA RÁPIDA (UNICORNIO) ---
+        console.log("\n🚀 ACCESO VIP CONCEDIDO.");
+        console.log("   > Activando Motores Turing + Tesla...");
+        await RetrievalEngine.retrieveFileHighEnergy(fileId, "LocalNode");
     
-    // Ejecutamos la descarga paralela
-    const success = await TeslaResonance.downloadPhased(fileId, sizeMB);
-
-    if (success) {
-        // Verificación Merkle final
-        const isClean = RetrievalEngine.verifyShardIntegrity("data", crypto.createHash('sha256').update("data").digest('hex'));
-        if (isClean) {
-            console.log("\n✅ ARCHIVO RECONSTRUIDO Y VERIFICADO.");
+    } else {
+        // --- RUTA LENTA (COLA DE ESPERA) ---
+        // Calculamos el tiempo de castigo: (Lo que te falta de reputación) * 0.5 segundos
+        const deficit = sbtRequired - LocalNode.reputationSBT;
+        const waitTimeSeconds = Math.max(5, deficit * 0.5); // Mínimo 5 segundos
+        
+        console.log(`\n🐢 ACCESO ESTÁNDAR (Prioridad Baja).`);
+        console.log(`   ⚠️ No tienes suficiente reputación para el carril rápido.`);
+        console.log(`   ⏳ Tiempo estimado de espera en cola: ${waitTimeSeconds.toFixed(1)} segundos...`);
+        
+        // Simulamos la cuenta atrás
+        for (let i = Math.floor(waitTimeSeconds); i > 0; i--) {
+            process.stdout.write(`   > Esperando turno... ${i}s \r`);
+            await new Promise(r => setTimeout(r, 1000));
         }
+        console.log("\n   > ✅ Turno concedido.");
+
+        console.log("📡 Descargando (Modo Monofásico - Lento)...");
+        await new Promise(r => setTimeout(r, 3000)); // Descarga lenta simulada
     }
+
+    // 3. INTEGRIDAD FINAL (Para ambos casos)
+    const isClean = RetrievalEngine.verifyShardIntegrity("data", crypto.createHash('sha256').update("data").digest('hex'));
+    if (isClean) console.log("\n✅ ARCHIVO RECONSTRUIDO. Integridad Merkle: 100%.");
 }
 
 async function main() {
@@ -145,9 +130,9 @@ async function main() {
     await PledgeManager.configure();
 
     while (true) {
-        console.log(`\n    🌌 OASIS CORE v7.13 - "TESLA SPEED"\n    ===================================`);
+        console.log(`\n    🌌 OASIS CORE v7.15 - "FAIR QUEUE"\n    ==================================`);
         console.log("1. 📥 Guardar Dato");
-        console.log("2. 🧲 Recuperar Dato (Trifásico/Biológico)");
+        console.log("2. 🧲 Recuperar Dato (Cola o VIP)");
         console.log("3. 📊 Ver Perfil");
         console.log("4. 🚪 Salir");
 
