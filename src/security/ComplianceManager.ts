@@ -1,61 +1,42 @@
-import * as fs from 'fs';
+import { WormLedger } from './WormLedger';
 
 /**
- * ⚖️ COMPLIANCE MANAGER (El Auditor)
- * Implementa controles para ENS (Esquema Nacional de Seguridad),
- * ISO 27001 (Trazabilidad) y RGPD (Derechos del usuario).
+ * ⚖️ COMPLIANCE MANAGER (Con WORM Drive)
  */
 export class ComplianceManager {
     
-    private static LOG_FILE = 'audit_trail.log';
-
-    /**
-     * TRAZABILIDAD (ISO 27001 A.12.4): Registro de eventos.
-     * Guarda evidencias forenses de quién hizo qué y cuándo.
-     */
-    static logEvent(actor: string, action: string, resourceId: string, status: 'SUCCESS' | 'DENIED'): void {
-        const timestamp = new Date().toISOString();
-        // Formato CEF (Common Event Format) simplificado para SIEM
-        const logEntry = `[${timestamp}] ACTOR=${actor} ACTION=${action} RES=${resourceId} STATUS=${status}\n`;
-        
-        // En un sistema real, esto iría a un WORM (Write Once Read Many) drive.
-        // Aquí simulamos escritura en disco seguro.
-        try {
-            // fs.appendFileSync(this.LOG_FILE, logEntry); // Descomentar para guardar real
-            console.log(`   📝 AUDITORÍA (ENS): ${logEntry.trim()}`);
-        } catch (e) {
-            console.error("   🚨 FALLO CRÍTICO DE AUDITORÍA: No se pudo escribir el log.");
-        }
+    static initialize() {
+        WormLedger.initialize();
     }
 
-    /**
-     * DERECHO AL OLVIDO (RGPD Art. 17 / DPD):
-     * Borrado seguro y certificado de datos personales.
-     */
-    static cryptoShredding(fileHash: string): boolean {
-        console.log(`\n⚖️  DPD ALERT: Ejecutando 'Right to be Forgotten' sobre ${fileHash}...`);
-        console.log("   > 🔥 Destruyendo claves de cifrado (Crypto-Shredding)...");
-        console.log("   > 🗑️  Sobrescribiendo sectores de memoria...");
+    static logEvent(actor: string, action: string, resourceId: string, status: 'SUCCESS' | 'DENIED' | 'WARNING'): void {
+        // Escribimos en la cadena inmutable
+        WormLedger.writeEntry(actor, action, resourceId, status);
         
+        // Feedback visual mínimo
+        const icon = status === 'SUCCESS' ? '📝' : '🚨';
+        console.log(`   ${icon} AUDITORÍA (WORM): [${action}] -> ${resourceId}`);
+    }
+
+    static cryptoShredding(fileHash: string): boolean {
+        console.log(`\n⚖️  DPD ALERT: Ejecutando Crypto-Shredding...`);
         this.logEvent('DPD_OFFICER', 'DATA_ERASURE', fileHash, 'SUCCESS');
         return true;
     }
 
-    /**
-     * PREVENCIÓN DE BLANQUEO (AML / LPBC):
-     * Verifica que no haya transacciones anómalas de alto valor sin identificar.
-     */
     static checkTransactionAML(amount: number, concept: string): boolean {
-        // Umbral microCeENS / Simplificado
         const AML_THRESHOLD = 1000; 
-
         if (amount > AML_THRESHOLD) {
-            console.log(`   🚨 AML BLOCK: Transacción de ${amount} ROSE supera el límite sin KYC reforzado.`);
             this.logEvent('SYSTEM_AML', 'BLOCK_TX', concept, 'DENIED');
             return false;
         }
-        
-        this.logEvent('WALLET', 'EXECUTE_TX', `${concept}|AMOUNT:${amount}`, 'SUCCESS');
+        this.logEvent('WALLET', 'EXECUTE_TX', `${concept}|${amount.toFixed(2)}`, 'SUCCESS');
         return true;
+    }
+    
+    // Función para que el Auditor externo verifique la integridad
+    static runAuditCheck(): boolean {
+        console.log("   🕵️‍♂️ Ejecutando verificación forense de la cadena...");
+        return WormLedger.verifyIntegrity();
     }
 }

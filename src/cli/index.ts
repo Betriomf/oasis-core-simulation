@@ -10,7 +10,6 @@ import { PersonalIndex } from '../storage/PersonalIndex';
 import { FileLauncher } from './FileLauncher';
 import { CrossPlatformShare } from '../network/CrossPlatformShare';
 import * as readline from 'readline';
-import * as crypto from 'crypto';
 
 const askQuestion = (query: string) => {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -36,138 +35,131 @@ const PledgeManager = {
 const LegalManager = {
     showFullTerms: async (askFn: any) => {
         console.log("\n📜 MARCO LEGAL (ENS / ISO 27001)");
-        console.log("   - Cumplimiento estricto de disponibilidad e integridad.");
-        console.log("   - Garantía de Derecho al Olvido (Borrado Seguro).");
+        console.log("   - Política de Retención de Datos Activa.");
+        console.log("   - Logs Inmutables (WORM Technology).");
         const ag = await askFn("\n✍️ Escribe 'CONFORME': ");
         if (ag.trim().toUpperCase() !== 'CONFORME') process.exit(1);
-        ComplianceManager.logEvent(LocalNode.id, 'ACCEPT_TERMS', 'v7.21', 'SUCCESS');
+        ComplianceManager.logEvent(LocalNode.id, 'ACCEPT_TERMS', 'v7.23', 'SUCCESS');
         console.log("✅ Sincronizado.\n");
     }
 };
 
 async function handleStorage() {
-    console.log("\n📥 INGESTA DE DATOS (Universal Bridge)");
-    console.log("   [A] 📱 AirDrop / Nearby / Quick Share");
+    console.log("\n📥 INGESTA DE DATOS (Universal)");
+    console.log("   [A] 📱 AirDrop / Nearby");
     console.log("   [B] 💾 Disco Local");
-    
     const method = await askQuestion("> Selección [A/B]: ");
+    
     let name = "", sizeGB = 0;
-
     if (method.toUpperCase() === 'A') {
         const devices = await CrossPlatformShare.scanNearbyDevices();
-        console.log("\n📱 Dispositivos encontrados:");
-        devices.forEach((d, i) => console.log(`   [${i+1}] ${d}`));
-        const devIndex = await askQuestion("> Selecciona origen [1-3]: ");
+        const devIndex = await askQuestion("> Selecciona [1-3]: ");
         const fileData = await CrossPlatformShare.receiveFile(devices[parseInt(devIndex)-1]);
         name = fileData.name; sizeGB = fileData.size;
     } else {
-        name = await askQuestion("> Nombre del archivo: ");
+        name = await askQuestion("> Nombre: ");
         sizeGB = (Math.random() * 5) + 0.1;
     }
 
-    console.log(`\n📝 PROCESANDO: '${name}'`);
-    const description = await askQuestion("> Descripción (Enter = Dark Data): ");
+    const description = await askQuestion("> Descripción: ");
     const tagsRaw = await askQuestion("> Etiquetas: ");
     const tags = tagsRaw.split(',').filter(t => t.length > 0);
-
     const qualityScore = SemanticEngine.calculateMetadataScore(name, description, tags);
     const isDark = qualityScore < 40;
 
-    if (isDark) console.log("   ℹ️  INFO: Se guardará como Dark Data (Privado).");
+    // --- NUEVO BLOQUE: POLÍTICA DE RETENCIÓN (ENTROPÍA) ---
+    console.log("\n⏳ POLÍTICA DE RETENCIÓN (Ciclo de Vida del Dato):");
+    console.log("   [1] 90 Días (Estándar - Entropía Alta)");
+    console.log("   [2] 180 Días (Extendido - Entropía Media)");
+    console.log("   [3] 360 Días (Archivo Legal - Entropía Baja)");
+    const ttlSelection = await askQuestion("> Selección [1-3]: ");
+    let retention = "90_DAYS";
+    if (ttlSelection === '2') retention = "180_DAYS";
+    if (ttlSelection === '3') retention = "360_DAYS";
+    // -----------------------------------------------------
 
     if (!ComplianceManager.checkTransactionAML(sizeGB * 0.1, 'STORAGE_FEE')) return;
     const hash = HolographicStorage.calculateHolographicHash(name);
     
-    console.log("🛡️ Transmutando (Galois)...");
+    console.log("🛡️ Transmutando...");
     await new Promise(r => setTimeout(r, 800));
-    
     LocalNode.usedCredit += sizeGB;
     LocalNode.reputationSBT += (qualityScore > 70 ? 5 : 1);
     PersonalIndex.addEntry(name, hash, sizeGB, isDark);
     
-    console.log(`✅ GUARDADO SEGURO.`);
-    ComplianceManager.logEvent(LocalNode.id, 'STORE_NEW', hash, 'SUCCESS');
+    console.log(`✅ GUARDADO (Caducidad: ${retention}).`);
+    // REGISTRAMOS LA CADUCIDAD EN EL LOG WORM PARA EL AUDITOR
+    ComplianceManager.logEvent(LocalNode.id, 'STORE_NEW', `${hash}|RETENTION:${retention}`, 'SUCCESS');
 }
 
 async function handleRetrieval() {
-    console.log("\n🗂️  TU BÓVEDA DIGITAL (Gestión de Activos)");
+    console.log("\n🗂️  TU BÓVEDA DIGITAL");
     const files = PersonalIndex.getList();
-    
     if (files.length === 0) { console.log("   (Vacío)"); return; }
 
-    console.log("ID  | TIPO | ESTADO       | NOMBRE");
-    console.log("----|------|--------------|----------------");
-    files.forEach(f => {
-        console.log(`${f.id.toString().padEnd(3)} | ${f.type.padEnd(4)} | ${f.securityLevel.substring(0,8)}...  | ${f.name}`);
-    });
-
-    const selection = await askQuestion("\n> ID del archivo: ");
+    files.forEach(f => console.log(`${f.id} | ${f.type} | ${f.name}`));
+    const selection = await askQuestion("\n> ID: ");
     const file = PersonalIndex.getFileById(parseInt(selection));
     if (!file) return;
 
-    // --- SUB-MENÚ DE ACCIÓN (Derecho al Olvido) ---
-    console.log(`\n📂 ACCIONES PARA '${file.name}':`);
-    console.log("   [1] 🚀 ABRIR (Recuperar)");
-    console.log("   [2] 🗑️  BORRAR (Derecho al Olvido / Crypto-Shredding)");
-    
-    const action = await askQuestion("> Elige acción [1/2]: ");
+    console.log(`\n📂 ACCIONES: [1] ABRIR | [2] BORRAR (Derecho al Olvido)`);
+    const action = await askQuestion("> Opción: ");
 
     if (action === '2') {
-        // LÓGICA DE BORRADO SEGURO
-        const confirm = await askQuestion(`⚠️ ¿CONFIRMAS EL BORRADO IRREVERSIBLE DE ${file.name}? [SI/NO]: `);
-        if (confirm === 'SI') {
-            ComplianceManager.cryptoShredding(file.hash);
-            // Aquí lo borraríamos del array en memoria en una app real
-            console.log("✅ ARCHIVO ELIMINADO DEL ÍNDICE Y DE LA RED.");
-        }
+        ComplianceManager.cryptoShredding(file.hash);
+        console.log("✅ ELIMINADO.");
         return;
     }
-    // ---------------------------------------------
 
-    console.log(`\n🚀 RECUPERANDO: '${file.name}'`);
-    const congestion = Math.random();
-    const friction = RetrievalEngine.calculateNetworkFriction(congestion);
-    const sbtRequired = Math.floor(friction * 5); 
-
-    console.log(`   > Red: ${(congestion*100).toFixed(0)}% | VIP req: ${sbtRequired} SBT`);
-
+    const sbtRequired = 20; 
     if (LocalNode.reputationSBT >= sbtRequired) {
-        console.log("   🚀 ACCESO VIP (Tesla Resonance)...");
+        console.log("   🚀 ACCESO VIP...");
         await RetrievalEngine.retrieveFileHighEnergy(file.hash, LocalNode.id);
     } else {
-        console.log("   🐢 ACCESO ESTÁNDAR...");
-        await new Promise(r => setTimeout(r, 2000));
+        console.log("   🐢 ACCESO LENTO...");
+        await new Promise(r => setTimeout(r, 1000));
     }
-
-    console.log("\n📦 Abriendo en sistema nativo...");
     FileLauncher.openFile(file.name);
     ComplianceManager.logEvent(LocalNode.id, 'FILE_OPEN', file.hash, 'SUCCESS');
 }
 
+async function handleDPD() {
+    console.log("\n⚖️  PANEL DE AUDITORIA (ISO 27001)");
+    console.log("1. 🕵️‍♂️ Verificar Integridad de la Cadena (Tamper Check)");
+    console.log("2. 📄 Ver Logs WORM");
+    const sel = await askQuestion("> Opción: ");
+    
+    if (sel === '1') {
+        const isSecure = ComplianceManager.runAuditCheck();
+        if (isSecure) console.log("✅ INTEGRIDAD OK: La cadena criptográfica es válida.");
+        else console.log("🚨 ALERTA: La cadena de logs ha sido MANIPULADA.");
+    }
+}
+
 async function main() {
-    console.log(`\n🔒 INICIANDO SECURE BOOT (Final v7.21)...`);
+    console.log(`\n🔒 INICIANDO SECURE BOOT (Retention Policy v7.23)...`);
+    ComplianceManager.initialize(); 
     await IdentityManager.generateIdentity(); 
     WalletCore.initializeWallet(); 
     await LegalManager.showFullTerms(askQuestion);
     await PledgeManager.configure();
 
     while (true) {
-        console.log(`\n    🌌 OASIS CORE v7.21 - "SOVEREIGN DATA"\n    ======================================`);
-        console.log("1. 📥 Guardar (AirDrop / Local)");
-        console.log("2. 📂 Mis Archivos (Abrir / Borrar)");
-        console.log("3. 📊 Ver Perfil");
-        console.log("4. 🚪 Salir");
+        console.log(`\n    🌌 OASIS CORE v7.23 - "COMPLETE COMPLIANCE"\n    ===========================================`);
+        console.log("1. 📥 Guardar");
+        console.log("2. 📂 Archivos");
+        console.log("3. 📊 Perfil");
+        console.log("4. ⚖️  Auditoría");
+        console.log("5. 🚪 Salir");
 
-        const sel = await askQuestion("\n> Opción [1-4]: ");
+        const sel = await askQuestion("\n> Opción [1-5]: ");
 
         switch (sel) {
             case '1': await handleStorage(); break;
             case '2': await handleRetrieval(); break; 
-            case '3': 
-                 console.log(`📊 CRÉDITO: ${(LocalNode.virtualCredit - LocalNode.usedCredit).toFixed(2)} GB`);
-                 console.log(`🎖️ REPUTACIÓN: ${LocalNode.reputationSBT} SBT`);
-                 break;
-            case '4': process.exit(0); break;
+            case '3': console.log(`Reputación: ${LocalNode.reputationSBT}`); break;
+            case '4': await handleDPD(); break;
+            case '5': process.exit(0); break;
         }
     }
 }
