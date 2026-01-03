@@ -1,65 +1,39 @@
-import * as fs from 'fs';
-import { OasisConstants } from '../physics/OasisConstants';
-import { HardwareSecurity } from '../security/HardwareSecurity';
+import * as crypto from 'crypto';
 
-interface Hologram {
-    id: string;
-    size: number;
-    metadata: any;
-    energyLevel: number; // SBN (Saldo pagado)
-    creationTime: number;
-}
-
-/**
- * 🌌 HOLOGRAPHIC STORAGE (Bulk vs Boundary)
- */
 export class HolographicStorage {
     
-    private static db: Map<string, Hologram> = new Map();
-    private static readonly BULK_PATH = './oasis_bulk_data/';
+    // Base de datos simulada de archivos que ya existen en el mundo
+    // (En la realidad, esto sería la DHT global)
+    private static globalFileRegistry = new Set([
+        'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // Empty file
+        'a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e', // 'Avengers.mkv' simulado
+        'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'  // 'ubuntu.iso' simulado
+    ]);
 
     /**
-     * GUARDAR (Ingesta Fractal)
+     * Calcula el Hash Topológico (SHA-256) del archivo
      */
-    static async store(fileId: string, data: Buffer, paidEnergy: number) {
-        const hologram: Hologram = {
-            id: fileId,
-            size: data.length,
-            metadata: { hash: HardwareSecurity.hashData(data.toString()) },
-            energyLevel: paidEnergy,
-            creationTime: Date.now()
-        };
-
-        if (!fs.existsSync(this.BULK_PATH)) fs.mkdirSync(this.BULK_PATH);
-        fs.writeFileSync(`${this.BULK_PATH}${fileId}`, data);
-
-        this.db.set(fileId, hologram);
-        console.log(`   > 💾 HOLOGRAMA CREADO: ${fileId} [Energía: ${paidEnergy} SBN]`);
+    static calculateHolographicHash(fileName: string): string {
+        // En una app real leemos el buffer. Aquí simulamos un hash basado en el nombre
+        return crypto.createHash('sha256').update(fileName).digest('hex');
     }
 
     /**
-     * HIGIENE NUCLEAR (Ley de Curie)
+     * Comprueba si el archivo ya existe en el universo (Principio Holográfico)
      */
-    static applyCurieHygiene() {
-        // console.log("   > ☢️  INICIANDO CICLO CURIE (Limpieza Nuclear)...");
-        const now = Date.now();
-
-        this.db.forEach((hologram, id) => {
-            const t = (now - hologram.creationTime) / 3600000; // Horas
-            const decayFactor = OasisConstants.LAMBDA_DECAY / (hologram.energyLevel + 0.1);
-            const survivalProb = Math.exp(-decayFactor * t);
-
-            if (survivalProb < 0.1) {
-                console.log(`   > 💀 DATO MUERTO (Decaído por falta de pago): ${id}`);
-                this.deleteBulk(id);
-            }
-        });
+    static checkGlobalExistence(hash: string): boolean {
+        // Simulamos que el 30% de las veces, el archivo YA existe (ahorro total)
+        // O si el nombre es muy común
+        if (this.globalFileRegistry.has(hash)) return true;
+        
+        // Simulación de azar para la demo
+        return Math.random() < 0.3; 
     }
 
-    private static deleteBulk(id: string) {
-        try {
-            fs.unlinkSync(`${this.BULK_PATH}${id}`);
-            this.db.delete(id);
-        } catch(e) {}
+    /**
+     * Registra un nuevo archivo en el holograma
+     */
+    static registerFile(hash: string) {
+        this.globalFileRegistry.add(hash);
     }
 }
