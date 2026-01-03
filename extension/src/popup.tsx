@@ -1,11 +1,9 @@
 import { useState, useCallback } from "react"
 import { useDropzone } from "react-dropzone"
 
-// IMPORTAMOS EL CEREBRO (Toda la física que ya programaste)
-// Ajustamos las rutas para apuntar a la carpeta 'core'
+// IMPORTAMOS EL CEREBRO
 import { HolographicStorage } from "./core/storage/HolographicStorage"
 import { SemanticEngine } from "./core/semantic/SemanticEngine"
-// import { GaloisSharding } from "./core/storage/GaloisSharding" 
 
 export default function OasisHUD() {
   const [reputation, setReputation] = useState(110)
@@ -23,20 +21,17 @@ export default function OasisHUD() {
     setIsProcessing(true)
     setStatus(`🧬 Analizando: ${file.name}...`)
 
-    // 1. ANÁLISIS SEMÁNTICO (Calidad del Dato)
+    // 1. ANÁLISIS SEMÁNTICO
     await new Promise(r => setTimeout(r, 600)) 
-    // Usamos el motor semántico real
     const score = SemanticEngine.calculateMetadataScore(file.name, "Ingesta Manual", [])
     
-    // 2. FÍSICA DE GALOIS (Cálculo de Fragmentos)
-    // Calculamos basándonos en el tamaño real del archivo (Simulación de la lógica Galois)
+    // 2. FÍSICA DE GALOIS
     const shardsCalc = Math.ceil(file.size / (1024 * 1024)) + 3 
     
     setStatus(`🛡️ Atomizando en ${shardsCalc} fragmentos de Galois...`)
     await new Promise(r => setTimeout(r, 800))
 
-    // 3. RESONANCIA TESLA (Cálculo de Hash)
-    // Usamos el motor criptográfico real
+    // 3. RESONANCIA TESLA
     const hash = HolographicStorage.calculateHolographicHash(file.name)
     
     setStatus("⚡ Sincronizando Resonancia de Tesla...")
@@ -63,7 +58,7 @@ export default function OasisHUD() {
       {/* Fondo de Ruido Sutil */}
       <div className="absolute inset-0 opacity-5 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none"></div>
 
-      {/* 1. EL REACTOR (Círculo Central) */}
+      {/* 1. EL REACTOR */}
       <div className="relative flex items-center justify-center mb-6 mt-4 z-10">
         <div className={`absolute w-32 h-32 rounded-full border-2 border-cyan-500/30 ${isProcessing ? 'animate-spin' : 'animate-ping'} opacity-20`}></div>
         <div className="w-28 h-28 rounded-full bg-gradient-to-br from-cyan-600 to-blue-900 shadow-[0_0_30px_rgba(6,182,212,0.5)] flex items-center justify-center border border-cyan-400/50 relative overflow-hidden">
@@ -72,7 +67,7 @@ export default function OasisHUD() {
         </div>
       </div>
 
-      {/* 2. ESTADÍSTICAS EN TIEMPO REAL */}
+      {/* 2. ESTADÍSTICAS */}
       <div className="grid grid-cols-3 gap-2 w-full mb-4 z-10">
           <div className="bg-slate-800/60 p-2 rounded text-center border border-slate-700">
              <div className="text-[10px] text-gray-400">ENTROPÍA</div>
@@ -88,12 +83,12 @@ export default function OasisHUD() {
           </div>
       </div>
 
-      {/* 3. BARRA DE ESTADO */}
+      {/* 3. BARRA DE ESTADO (AQUÍ ESTABA EL ERROR, AHORA CORREGIDO) */}
       <div className="w-full bg-black/40 p-2 rounded border border-slate-800 font-mono text-[10px] text-cyan-300 mb-4 text-center h-8 flex items-center justify-center truncate z-10">
-        > {status}
+        &gt; {status}
       </div>
 
-      {/* 4. DROP ZONE REAL (El Portal) */}
+      {/* 4. DROP ZONE REAL */}
       <div 
         {...getRootProps()}
         className={`w-full h-24 border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer z-10
