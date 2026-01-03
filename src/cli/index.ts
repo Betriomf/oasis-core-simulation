@@ -1,3 +1,8 @@
+/**
+ * (C) 2026 OASIS SWARM.
+ * AUTHOR: MARIANO PANZANO CABALLÉ <mpc.3.14@gmail.com>
+ * LICENSED UNDER AGPL v3.
+ */
 import { HardwareSecurity } from '../security/HardwareSecurity';
 import { IdentityManager } from '../security/IdentityManager';
 import { WalletCore } from '../economy/WalletCore';
