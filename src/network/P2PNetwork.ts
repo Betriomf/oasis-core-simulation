@@ -1,51 +1,49 @@
 /**
  * 🕸️ GESTOR DE ENJAMBRE (SWARM MANAGER)
- * Escanea la red para encontrar nodos vivos y calcular la capacidad global.
+ * Escanea la red y ahora gestiona la "Temperatura" de los datos (Reacción-Difusión).
  */
 export class P2PNetwork {
     
-    // Simulamos una lista de nodos que responden al Ping
+    // Lista de nodos simulada
     private static activePeers = [
-        { id: 'Node_Berlin_01', latency: 45, freeSpaceGB: 2500, reputation: 0.98 },
-        { id: 'Node_Tokyo_X9', latency: 120, freeSpaceGB: 8000, reputation: 0.95 },
-        { id: 'Node_Local_Neighbor', latency: 5, freeSpaceGB: 500, reputation: 0.80 },
-        { id: 'Node_SpaceX_Sat', latency: 200, freeSpaceGB: 150, reputation: 0.99 }
+        { id: 'Node_Berlin', latency: 45, freeSpaceGB: 2500 },
+        { id: 'Node_Tokyo', latency: 120, freeSpaceGB: 8000 },
+        { id: 'Node_Local', latency: 5, freeSpaceGB: 500 } // Tu vecino (Baja Latencia)
     ];
 
-    /**
-     * Escanea la red en busca de capacidad disponible
-     */
     static async scanNetworkStatus() {
-        console.log("📡 PING enviado a la DHT (Tabla de Hash Distribuida)...");
-        await new Promise(r => setTimeout(r, 600)); // Latencia simulada
+        console.log("📡 SONAR: Escaneando enjambre...");
+        await new Promise(r => setTimeout(r, 400)); 
         
         let totalCapacityGB = 0;
-        let activeNodes = 0;
-
-        // Sumamos la capacidad de cada nodo encontrado
-        console.log("   > Recibiendo 'Pong' de pares cercanos:");
-        this.activePeers.forEach(peer => {
-            console.log(`     🔹 ${peer.id}: +${peer.freeSpaceGB} GB Libres (${peer.latency}ms)`);
-            totalCapacityGB += peer.freeSpaceGB;
-            activeNodes++;
-        });
-
-        // Factor Galois: Necesitamos 3 veces el espacio real para seguridad
-        // Esto responde a tu pregunta: reducimos la capacidad mostrada por seguridad
-        const effectiveCapacity = Math.floor(totalCapacityGB / 3);
+        this.activePeers.forEach(peer => totalCapacityGB += peer.freeSpaceGB);
 
         return {
             totalRaw: totalCapacityGB,
-            effective: effectiveCapacity,
-            nodes: activeNodes
+            effective: Math.floor(totalCapacityGB / 3),
+            nodes: this.activePeers.length
         };
     }
 
     /**
-     * Verifica si hay espacio suficiente para un archivo específico
+     * 🔥 CHECK DE TEMPERATURA (Biological Replication)
+     * Determina si un archivo es popular y se ha replicado cerca.
      */
+    static getFileTemperature(fileId: string): string {
+        // Simulamos la ecuación de Reacción-Difusión
+        // Archivos con nombres comunes o recientes suelen estar "Calientes"
+        const entropy = Math.random();
+        
+        if (entropy > 0.7) {
+            return "HOT"; // ¡Es viral! Está en el nodo de tu vecino.
+        } else if (entropy > 0.3) {
+            return "WARM"; // Está en nodos regionales.
+        } else {
+            return "COLD"; // Está en la red profunda (lento).
+        }
+    }
+
     static checkSufficiency(fileSizeMB: number, networkStats: any): boolean {
-        // Convertimos GB a MB para comparar
         const availableMB = networkStats.effective * 1024;
         return availableMB > fileSizeMB;
     }

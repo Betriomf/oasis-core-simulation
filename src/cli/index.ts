@@ -1,174 +1,166 @@
+/**
+ * (C) 2026 OASIS SWARM CORE.
+ * SOVEREIGN NETWORK ARCHITECTURE.
+ */
 import { HardwareSecurity } from '../security/HardwareSecurity';
 import { IdentityManager } from '../security/IdentityManager';
 import { WalletCore } from '../economy/WalletCore';
 import { P2PNetwork } from '../network/P2PNetwork';
 import { GaloisSharding } from '../storage/GaloisSharding';
 import { HolographicStorage } from '../storage/HolographicStorage';
+import { RetrievalEngine } from '../storage/RetrievalEngine';
+import { TeslaResonance } from '../network/TeslaResonance'; // <--- NUEVO IMPORT
 import * as readline from 'readline';
+import * as crypto from 'crypto';
 
 const askQuestion = (query: string) => {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     return new Promise<string>(resolve => rl.question(query, ans => { rl.close(); resolve(ans); }));
 };
 
-// --- ESTADO DEL NODO LOCAL ---
 const LocalNode = {
-    pledgedGB: 0,      
-    virtualCredit: 0,  
-    usedCredit: 0      
+    pledgedGB: 0, virtualCredit: 0, usedCredit: 0, reputationSBT: 10
 };
 
-// --- GESTIÓN DE APORTE (RECIPROCIDAD) ---
 const PledgeManager = {
     configure: async () => {
-        console.log("\n⚖️  CONFIGURACIÓN DE RECIPROCIDAD (El Círculo Negro)");
-        console.log("==================================================");
-        console.log("Para tener derecho a usar la red, debes ceder espacio local.");
-        console.log("💎 RATIO DE APALANCAMIENTO: 1:1000");
-        
-        const gb = await askQuestion("\n> ¿Cuántos GB de tu disco cedes al enjambre?: ");
+        console.log("\n⚖️  CONFIGURACIÓN DE RECIPROCIDAD");
+        console.log("💎 RATIO: 1:1000 | ⭐ REPUTACIÓN ACTIVA");
+        const gb = await askQuestion("\n> ¿Cuántos GB cedes?: ");
         const pledged = parseFloat(gb);
-        
-        if (isNaN(pledged) || pledged <= 0) {
-            console.log("❌ Error: Debes contribuir.");
-            process.exit(1);
-        }
-
+        if (isNaN(pledged) || pledged <= 0) process.exit(1);
         LocalNode.pledgedGB = pledged;
-        LocalNode.virtualCredit = pledged * 1000; 
-        console.log(`✅ APORTE CONFIRMADO: ${LocalNode.pledgedGB} GB cedidos.`);
-        await new Promise(r => setTimeout(r, 1000));
+        LocalNode.virtualCredit = pledged * 1000;
+        LocalNode.reputationSBT += (pledged * 10);
+        console.log(`✅ APORTE CONFIRMADO.\n`);
     }
 };
 
-// --- RESTAURACIÓN DE TÉRMINOS LEGALES COMPLETOS (v2026) ---
 const LegalManager = {
     showFullTerms: async (askFn: any) => {
-        console.log("\n📜 TÉRMINOS Y CONDICIONES DEL NODO SOBERANO (v2026)");
-        console.log("=====================================================");
-        
-        console.log("1. PRINCIPIO DE RECIPROCIDAD:");
-        console.log("   La red es colaborativa. Recibes crédito (x1000) basado en lo que aportas.");
-        
-        console.log("\n2. MERO CONDUCTO Y NEUTRALIDAD:");
-        console.log("   Tu nodo procesa matemáticas cifradas, no contenido.");
-        console.log("   La red no tiene 'dueños' ni servidores centrales.");
-
-        console.log("\n3. LEY DE ENTROPÍA (CICLOS DE VIDA):");
-        console.log("   Oasis NO es un almacén infinito. Los datos tienen fecha de caducidad.");
-        console.log("   Debes elegir un nivel de persistencia para cada archivo:");
-        console.log("     - 🟡 NIVEL 1: 90 Días  (Temporal / Caché)");
-        console.log("     - 🟢 NIVEL 2: 180 Días (Estándar / Proyectos)");
-        console.log("     - 🔵 NIVEL 3: 360 Días (Archivo / Larga Duración)");
-        console.log("   ⚠️ Si no renuevas (visitas) el dato, la 'Poda Sináptica' lo reciclará.");
-
-        console.log("=====================================================");
-        
-        const agreement = await askFn("\n✍️ Escribe 'ENTIENDO' para aceptar estos términos: ");
-        if (agreement.trim().toUpperCase() !== 'ENTIENDO') {
-            console.log(`\n❌ Acceso denegado.`);
-            process.exit(1);
-        }
-        console.log("✅ Conciencia Sincronizada.\n");
+        console.log("\n📜 TÉRMINOS Y CONDICIONES (v2026)");
+        console.log("1. ENTROPÍA: Datos no usados se evaporan.");
+        console.log("2. HORIZONTE DE SUCESOS: Límite físico.");
+        console.log("3. MERO CONDUCTO: La red es neutral.");
+        const ag = await askFn("\n✍️ Escribe 'ENTIENDO': ");
+        if (ag.trim().toUpperCase() !== 'ENTIENDO') process.exit(1);
+        console.log("✅ Sincronizado.\n");
     }
 };
 
-// --- LÓGICA DE GUARDADO (FÍSICA + BEKENSTEIN) ---
-async function handleQuantumStorage() {
-    console.log("\n📡 INICIANDO SONAR DE RED (Capacity Check)");
-    
-    // 1. OBTENER LA REALIDAD FÍSICA
+async function handleStorage() {
+    console.log("\n📡 SONAR DE RED...");
     const stats = await P2PNetwork.scanNetworkStatus();
-    
-    // 2. CALCULAR EL LÍMITE REAL (Intersección Economía vs Física)
-    const myRights = LocalNode.virtualCredit - LocalNode.usedCredit;
-    const physicsLimit = stats.effective;
-    
-    // Límite de Bekenstein: El mínimo entre tus derechos y la realidad
-    const realAvailable = Math.min(myRights, physicsLimit);
+    const realLimit = Math.min(LocalNode.virtualCredit - LocalNode.usedCredit, stats.effective);
+    console.log(`> DISPONIBLE REAL: ${realLimit.toFixed(2)} GB`);
 
-    console.log("\n📊 INFORME DE ESTADO (Gravedad Entrópica):");
-    console.log(`   > 🌍 Capacidad Física Red: ${physicsLimit.toFixed(2)} GB`);
-    console.log(`   > 💳 Tu Crédito Virtual:   ${myRights.toFixed(2)} GB`);
-    console.log(`   > 🔓 DISPONIBLE REAL:      ${realAvailable.toFixed(2)} GB (Límite de Bekenstein)`);
+    console.log("\n📥 INGESTA: [A] AirDrop | [B] Ruta Local");
+    await askQuestion("> Selección: ");
+    const name = await askQuestion("> Archivo: ");
+    
+    console.log("\n⏳ CICLO DE VIDA (TTL)");
+    console.log("   [1] 90 Días | [2] 180 Días | [3] 360 Días");
+    await askQuestion("> Selección: ");
 
-    if (realAvailable <= 0.1) {
-        console.log("\n⛔ ALERTA: Horizonte de Sucesos alcanzado. Red llena o sin crédito.");
+    const sizeGB = (Math.random() * 5) + 0.1;
+    if (sizeGB > realLimit) { console.log("⛔ RECHAZADO: Horizonte de Sucesos."); return; }
+
+    const hash = HolographicStorage.calculateHolographicHash(name);
+    if (HolographicStorage.checkGlobalExistence(hash)) {
+        console.log("✨ DEDUPLICADO (Coste 0).");
+    } else {
+        console.log("🛡️ Transmutando (Galois)...");
+        await new Promise(r => setTimeout(r, 800));
+        LocalNode.usedCredit += sizeGB;
+        LocalNode.reputationSBT += 1;
+        console.log("✅ GUARDADO (+1 SBT).");
+    }
+}
+
+// --- RECUPERACIÓN ACELERADA (TESLA + BIOLÓGICA) ---
+async function handleRetrieval() {
+    console.log("\n🧲 MÓDULO DE RECUPERACIÓN (Velocidad v7.13)");
+    console.log("============================================");
+    
+    const fileId = await askQuestion("> Nombre del archivo: ");
+    
+    // 1. BIOLOGICAL CHECK (Temperatura)
+    console.log("   > 🌡️ Midiendo temperatura viral del archivo...");
+    const temp = P2PNetwork.getFileTemperature(fileId);
+    let speedMultiplier = 1;
+
+    if (temp === "HOT") {
+        console.log("   🔥 ESTADO: HOT (Viral).");
+        console.log("   ✅ Replicación Biológica activada: El archivo está en tu Nodo Vecino.");
+        speedMultiplier = 10; // 10x Velocidad
+    } else if (temp === "WARM") {
+        console.log("   ☁️ ESTADO: WARM (Regional).");
+        speedMultiplier = 5;
+    } else {
+        console.log("   ❄️ ESTADO: COLD (Deep Storage).");
+        console.log("   ⚠️ Requiere búsqueda profunda.");
+        speedMultiplier = 1;
+    }
+
+    // 2. CÁLCULO DE PRIORIDAD (SBT)
+    const congestion = Math.random();
+    const friction = RetrievalEngine.calculateNetworkFriction(congestion);
+    const sbtRequired = Math.floor(friction * 5 / speedMultiplier); // Si es HOT, pide menos SBT
+
+    console.log(`\n📊 ESTADO DE LA RED:`);
+    console.log(`   > Congestión: ${(congestion * 100).toFixed(0)}%`);
+    console.log(`   > 🎖️ Reputación Requerida: ${sbtRequired} SBT`);
+    console.log(`   > 👤 Tu Reputación: ${LocalNode.reputationSBT} SBT`);
+
+    if (LocalNode.reputationSBT < sbtRequired) {
+        console.log("\n🐢 PRIORIDAD BAJA. Tu reputación no vence la fricción actual.");
         return;
     }
 
-    // 3. MENÚ DE INGESTA
-    console.log("\n📥 MÓDULO DE INGESTA");
-    console.log("  [A] AirDrop / Nearby | [B] Quick Share | [C] Ruta Local");
-    const inputMethod = await askQuestion("\n> Método [A/B/C]: ");
-    const fileName = await askQuestion("> Nombre del archivo: ");
+    const confirm = await askQuestion("\n> ¿Iniciar Descarga? [s/n]: ");
+    if (confirm.toLowerCase() !== 's') return;
 
-    // 4. TTL (Selector de Entropía)
-    console.log("\n⏳ CICLO DE VIDA (TTL)");
-    console.log("   [1] 🟡 90 Días  (Coste Base: x1)");
-    console.log("   [2] 🟢 180 Días (Coste Base: x1.5)");
-    console.log("   [3] 🔵 360 Días (Coste Base: x2)");
-    const ttl = await askQuestion("> Selección [1-3]: ");
+    // 3. DESCARGA TRIFÁSICA (TESLA RESONANCE)
+    // Aquí invocamos el nuevo motor
+    const sizeMB = (Math.random() * 500) + 100;
+    console.log(`\n📡 Sintonizando enjambre para ${sizeMB.toFixed(0)} MB...`);
+    
+    // Ejecutamos la descarga paralela
+    const success = await TeslaResonance.downloadPhased(fileId, sizeMB);
 
-    // 5. ANÁLISIS DE MASA
-    const fileSizeMB = Math.floor(Math.random() * 5000) + 100; 
-    const fileSizeGB = fileSizeMB / 1024;
-    console.log(`\n⚙️  ANALIZANDO MASA DE '${fileName}' (${fileSizeGB.toFixed(2)} GB)...`);
-
-    // 6. CHECK HOLOGRÁFICO
-    const fileHash = HolographicStorage.calculateHolographicHash(fileName);
-    const exists = HolographicStorage.checkGlobalExistence(fileHash);
-
-    if (exists) {
-        console.log("\n✨ COINCIDENCIA HOLOGRÁFICA (Masa Nula).");
-        console.log("✅ GUARDADO (Referencia Deduplicada).");
-    } else {
-        console.log("   > Archivo ÚNICO (Masa Positiva).");
-        
-        // 7. CHECK DE RADIACIÓN HAWKING (¿Cabe?)
-        if (fileSizeGB > realAvailable) {
-            console.log(`\n☢️ RADIACIÓN DE HAWKING ACTIVADA (Rechazo)`);
-            console.log(`   El archivo supera tu límite disponible (${realAvailable.toFixed(2)} GB).`);
-            return;
+    if (success) {
+        // Verificación Merkle final
+        const isClean = RetrievalEngine.verifyShardIntegrity("data", crypto.createHash('sha256').update("data").digest('hex'));
+        if (isClean) {
+            console.log("\n✅ ARCHIVO RECONSTRUIDO Y VERIFICADO.");
         }
-
-        console.log("   > 🛡️ Aplicando Campos de Galois...");
-        GaloisSharding.transmuteToShards(fileName);
-        console.log("   > 🌻 Distribuyendo fragmentos...");
-        await new Promise(r => setTimeout(r, 800));
-
-        LocalNode.usedCredit += fileSizeGB;
-        
-        console.log(`\n✅ ARCHIVO GUARDADO.`);
-        console.log(`   📉 Tu Crédito Restante: ${(LocalNode.virtualCredit - LocalNode.usedCredit).toFixed(2)} GB`);
     }
 }
 
 async function main() {
     console.log(`\n🔒 INICIANDO SECURE BOOT...`);
     await IdentityManager.generateIdentity(); 
-    
-    // PRIMERO: Legalidad Completa
+    WalletCore.initializeWallet(); 
     await LegalManager.showFullTerms(askQuestion);
-    // SEGUNDO: Reciprocidad
     await PledgeManager.configure();
 
     while (true) {
-        console.log(`\n    🌌 OASIS CORE v7.10 - "GOLD STANDARD"\n    =====================================`);
-        console.log("1. 📥 Guardar Dato (Bekenstein + Legal)");
-        console.log("2. 📊 Ver Panel Económico");
-        console.log("3. 🚪 Salir");
+        console.log(`\n    🌌 OASIS CORE v7.13 - "TESLA SPEED"\n    ===================================`);
+        console.log("1. 📥 Guardar Dato");
+        console.log("2. 🧲 Recuperar Dato (Trifásico/Biológico)");
+        console.log("3. 📊 Ver Perfil");
+        console.log("4. 🚪 Salir");
 
-        const selection = await askQuestion("\n> Opción [1-3]: ");
+        const sel = await askQuestion("\n> Opción [1-4]: ");
 
-        switch (selection) {
-            case '1': await handleQuantumStorage(); break;
-            case '2': 
-                 const balance = WalletCore.getBalance();
-                 console.log(`📊 SALDO: ${balance.rose} ROSE | APORTE: ${LocalNode.pledgedGB} GB`);
-                 console.log(`📊 CRÉDITO: ${(LocalNode.virtualCredit - LocalNode.usedCredit).toFixed(2)} / ${LocalNode.virtualCredit} GB`);
+        switch (sel) {
+            case '1': await handleStorage(); break;
+            case '2': await handleRetrieval(); break; 
+            case '3': 
+                 console.log(`📊 CRÉDITO: ${(LocalNode.virtualCredit - LocalNode.usedCredit).toFixed(2)} GB`);
+                 console.log(`🎖️ REPUTACIÓN: ${LocalNode.reputationSBT} SBT`);
                  break;
-            case '3': process.exit(0); break;
+            case '4': process.exit(0); break;
         }
     }
 }

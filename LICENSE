@@ -1,54 +1,17 @@
 GNU AFFERO GENERAL PUBLIC LICENSE
 Version 3, 19 November 2007
 
-Copyright (C) 2025 Oasis Swarm Architect
+Copyright (C) 2026 OASIS SWARM ARCHITECT (Your Name/Organization)
 
-Everyone is permitted to copy and distribute verbatim copies
-of this license document, but changing it is not allowed.
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions.
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+TERMS:
+1. If you run this software on a server (network access), you MUST 
+   provide the source code to any user interacting with it.
+2. Any modification to this code must also be released under AGPL v3.
+3. FOR COMMERCIAL USE WITHOUT OPEN SOURCE OBLIGATIONS, YOU MUST 
+   CONTACT THE COPYRIGHT HOLDER FOR A COMMERCIAL LICENSE.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-========================================================================
-       ADDITIONAL PERMISSIONS AND COVENANTS UNDER SECTION 7
-========================================================================
-
-1. COMMERCIAL DUAL-LICENSING
-   The copyright holder ("Oasis Swarm Architect") reserves the right to 
-   issue commercial licenses (Enterprise Edition) that are exempt from 
-   the copyleft provisions of this AGPLv3 license. Contributors must agree 
-   to a CLA (Contributor License Agreement) to facilitate this model.
-
-2. THE OASIS ETHICAL COVENANT & IMPACT GRANT (ODS/SDG)
-   In addition to the terms of the GNU AGPLv3, the "Oasis Swarm Architect" 
-   offers a special "Impact Grant" to foster positive social transformation.
-
-   A. ALIGNMENT WITH SUSTAINABLE DEVELOPMENT GOALS (SDGs/ODS)
-      Entities that can demonstrate strict alignment with the following United 
-      Nations SDGs are eligible for a free Enterprise License:
-      
-      - ODS 4:  Quality Education (Educación de Calidad)
-      - ODS 8:  Decent Work & Economic Growth (Trabajo Decente)
-      - ODS 9:  Industry, Innovation & Infrastructure (Industria e Innovación)
-      - ODS 12: Responsible Consumption (Producción Responsable)
-      - ODS 13: Climate Action (Acción por el Clima)
-      - ODS 16: Peace, Justice & Strong Institutions (Paz y Justicia)
-      - ODS 17: Partnerships for the Goals (Alianzas)
-
-   B. THE SOCIAL REINVESTMENT PLEDGE
-      To activate this Impact Grant, the entity implies a moral commitment:
-      "Resources and capital saved through the efficiency of this software 
-      shall be partially redirected towards social works, fostering positive 
-      human values, or furthering the aforementioned SDGs."
-
-========================================================================
+(Para el texto legal completo, ver: https://www.gnu.org/licenses/agpl-3.0.txt)
