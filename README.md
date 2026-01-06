@@ -1,5 +1,7 @@
 # 🌌 OASIS CORE (SovereignNet v7.13)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18157841.svg)](https://doi.org/10.5281/zenodo.18157841)
+
 > **The First Physics-Based Decentralized Storage Network.**
 > *Zero Knowledge. Infinite Scale. Biological Resilience.*
 
